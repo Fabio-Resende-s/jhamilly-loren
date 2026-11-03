@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎈 Feliz Aniversário Jhamilly Loren 💖</title>
+
+<!-- 👇 ADICIONE ESTA LINHA AQUI -->
+    <link rel="icon" type="image/jpeg" href="foto12.jpg">
+
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+body{min-height:100vh;background:linear-gradient(135deg,#ff9a9e 0%,#fad0c4 50%,#ffecd2 100%);font-family:Arial,sans-serif;overflow-x:hidden;position:relative}
+
+.musica-btn{position:fixed;top:15px;right:15px;width:48px;height:48px;border-radius:50%;border:none;background:rgba(255,255,255,.9);font-size:22px;cursor:pointer;z-index:300;box-shadow:0 4px 15px rgba(0,0,0,.2);transition:all .2s;display:grid;place-items:center}
+.musica-btn:hover{transform:scale(1.1);background:#fff}
+.musica-btn.off{opacity:.6}
+
+.titulo{text-align:center;padding:50px 20px 20px;color:#d63384;text-shadow:2px 2px 4px rgba(0,0,0,.2)}
+.titulo h1{font-size:clamp(1.7rem,6vw,3.5rem);margin-bottom:10px;animation:pulsar 1.5s ease-in-out infinite alternate}
+.titulo p{font-size:clamp(1rem,3vw,1.5rem);color:#6c2e7c}
+@keyframes pulsar{from{transform:scale(1)}to{transform:scale(1.05)}}
+
+.carrossel{max-width:850px;margin:0 auto;padding:20px;position:relative;z-index:10}
+.carrossel-tela{width:100%;aspect-ratio:4/3;border-radius:20px;overflow:hidden;box-shadow:0 15px 40px rgba(0,0,0,.25);position:relative;background:#000;touch-action:pan-y}
+.carrossel-foto{position:absolute;inset:0;opacity:0;transform:scale(1.4) rotate(12deg);filter:blur(8px);transition:all .9s cubic-bezier(.175,.885,.32,1.275)}
+.carrossel-foto.ativa{opacity:1;transform:scale(1) rotate(0);filter:blur(0)}
+.carrossel-foto.saindo{opacity:0;transform:scale(.2) rotate(-20deg);filter:blur(12px)}
+.carrossel-foto img,
+.carrossel-foto video{width:100%;height:100%;object-fit:cover;display:block;background:#000}
+
+/* BOTÃO DE SOM NO VÍDEO */
+.som-video{position:absolute;bottom:14px;right:14px;background:rgba(0,0,0,.7);color:#fff;border:none;padding:10px 16px;border-radius:30px;font-size:.9rem;font-weight:700;cursor:pointer;z-index:25;backdrop-filter:blur(6px);transition:all .2s;display:flex;align-items:center;gap:6px;font-family:inherit}
+.som-video:hover{background:rgba(214,51,132,.9);transform:scale(1.05)}
+.som-video.tocando{background:rgba(40,167,69,.9)}
+
+.explosao{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;width:100%;height:100%}
+.particula{position:absolute;font-size:28px;opacity:0;animation:espalhar 1.2s ease-out forwards}
+@keyframes espalhar{0%{opacity:1;transform:translate(0,0) scale(.2) rotate(0)}60%{opacity:1;transform:translate(var(--tx),var(--ty)) scale(1.4) rotate(180deg)}100%{opacity:0;transform:translate(var(--tx),var(--ty)) scale(.8) rotate(360deg)}}
+
+.impacto{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:50px;opacity:0;pointer-events:none;z-index:15}
+@keyframes impacto{0%{opacity:0;transform:translate(-50%,-50%) scale(.3)}50%{opacity:1;transform:translate(-50%,-50%) scale(1.6)}100%{opacity:0;transform:translate(-50%,-50%) scale(2.2)}}
+
+.pontos{text-align:center;margin-top:20px}
+.ponto{display:inline-block;width:14px;height:14px;margin:0 6px;border-radius:50%;background:#ffc8d0;cursor:pointer;transition:all .3s}
+.ponto.ativo{background:#d63384;transform:scale(1.2)}
+.ponto.video{background:#6c9fff}
+.ponto.video.ativo{background:#4f8bff}
+
+.btn-nav{position:absolute;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.8);border:none;font-size:28px;padding:10px 16px;border-radius:50%;cursor:pointer;z-index:20;color:#d63384;box-shadow:0 3px 10px rgba(0,0,0,.2)}
+.btn-esq{left:10px}.btn-dir{right:10px}.btn-nav:hover{background:#fff}
+
+.fundo-festas{position:fixed;inset:0;pointer-events:none;z-index:1;overflow:hidden}
+.flutuante{position:absolute;top:0;animation:subir var(--dur,6s) ease-in-out forwards}
+@keyframes subir{0%{transform:translateY(100vh) rotate(0);opacity:0}15%{opacity:1}85%{opacity:1}100%{transform:translateY(-120px) rotate(360deg);opacity:0}}
+
+.mensagem-final{text-align:center;padding:30px 20px 50px;font-size:clamp(1.1rem,4vw,1.8rem);color:#d63384;font-weight:bold;position:relative;z-index:10}
+.emoji-alegria{display:inline-block;animation:rodar 3s linear infinite}
+@keyframes rodar{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+
+.btn-jogo{display:block;margin:10px auto 30px;padding:18px 40px;font-size:clamp(1rem,3.5vw,1.3rem);font-weight:800;color:#fff;background:linear-gradient(135deg,#d63384,#a855f7,#d63384);background-size:200% 200%;border:none;border-radius:50px;cursor:pointer;font-family:inherit;box-shadow:0 10px 30px rgba(214,51,132,.45);position:relative;z-index:20;animation:pulsarJogo 2s ease-in-out infinite,brilhoJogo 3s linear infinite}
+.btn-jogo:hover{transform:scale(1.08)}
+@keyframes pulsarJogo{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
+@keyframes brilhoJogo{0%{background-position:0 50%}100%{background-position:200% 50%}}
+
+.jogo-overlay{display:none;position:fixed;inset:0;background:rgba(40,10,30,.75);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:200;padding:20px;overflow-y:auto}
+.jogo-overlay.ativo{display:flex;align-items:center;justify-content:center}
+.jogo-modal{background:linear-gradient(160deg,#fff5f8,#fff);border-radius:26px;padding:32px 26px 28px;max-width:520px;width:100%;box-shadow:0 25px 70px rgba(0,0,0,.35);position:relative;animation:modalIn .45s cubic-bezier(.175,.885,.32,1.275);max-height:calc(100vh - 40px);overflow-y:auto}
+@keyframes modalIn{0%{transform:scale(.7) translateY(30px);opacity:0}100%{transform:scale(1) translateY(0);opacity:1}}
+
+.fechar-jogo{position:absolute;top:12px;right:14px;width:36px;height:36px;border-radius:50%;border:none;background:#ffe1ea;color:#d63384;font-size:1.1rem;font-weight:700;cursor:pointer;transition:all .2s;z-index:5}
+.fechar-jogo:hover{background:#d63384;color:#fff;transform:rotate(90deg)}
+
+.senha-tela{text-align:center;padding:10px 0}
+.senha-tela h2{color:#d63384;font-size:1.6rem;margin-bottom:8px}
+.senha-tela .dica{color:#a0437a;font-weight:600;font-size:.95rem;margin-bottom:18px;line-height:1.5}
+.senha-input{width:100%;padding:16px;font-size:1.3rem;text-align:center;letter-spacing:3px;border:3px solid #ffc8d0;border-radius:14px;font-family:inherit;color:#6c2e7c;font-weight:700;margin-bottom:14px;transition:border-color .2s}
+.senha-input:focus{outline:none;border-color:#d63384}
+.senha-input.errada{animation:erroAnim .5s ease;border-color:#dc3545}
+@keyframes erroAnim{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-10px)}40%,80%{transform:translateX(10px)}}
+.senha-erro{color:#dc3545;font-weight:700;font-size:.9rem;min-height:22px;margin-bottom:12px}
+.btn-principal{width:100%;padding:16px;font-size:1.05rem;font-weight:800;color:#fff;background:linear-gradient(135deg,#d63384,#a855f7);border:none;border-radius:14px;cursor:pointer;font-family:inherit;box-shadow:0 6px 18px rgba(214,51,132,.4);transition:transform .2s}
+.btn-principal:hover{transform:scale(1.03)}
+.btn-principal:active{transform:scale(.98)}
+
+.progresso{width:100%;height:10px;background:#ffe1ea;border-radius:10px;overflow:hidden;margin-bottom:16px}
+.progresso-barra{height:100%;width:0;background:linear-gradient(90deg,#d63384,#a855f7);border-radius:10px;transition:width .6s cubic-bezier(.175,.885,.32,1.275)}
+.contador{text-align:center;color:#a0437a;font-weight:700;font-size:.9rem;letter-spacing:.5px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.contador .tentativas{background:#ffe1ea;padding:4px 12px;border-radius:20px;font-size:.8rem;color:#a0437a}
+.pergunta{font-size:clamp(1.1rem,4vw,1.35rem);color:#6c2e7c;font-weight:800;text-align:center;margin-bottom:22px;line-height:1.4;min-height:60px}
+.opcoes{display:flex;flex-direction:column;gap:11px;margin-bottom:18px}
+.opcao{padding:15px 20px;font-size:clamp(.95rem,3.2vw,1.05rem);font-weight:600;color:#6c2e7c;background:#fff;border:2px solid #ffc8d0;border-radius:14px;cursor:pointer;transition:all .2s;font-family:inherit;text-align:left;min-height:48px}
+.opcao:hover:not(:disabled){background:#fff5f8;border-color:#d63384;transform:translateX(5px)}
+.opcao:disabled{cursor:default}
+.opcao.correta{background:#d4f5da;border-color:#28a745;color:#155724;animation:acertoAnim .55s ease}
+.opcao.errada{background:#f8d7da;border-color:#dc3545;color:#721c24;animation:erroAnim .5s ease}
+.opcao.apagada{opacity:.35}
+@keyframes acertoAnim{0%,100%{transform:scale(1)}40%{transform:scale(1.06)}70%{transform:scale(.98)}}
+.frase-revelada{text-align:center;font-size:1.05rem;font-weight:700;color:#d63384;min-height:50px;opacity:0;transition:opacity .4s;padding:8px;line-height:1.4}
+.frase-revelada.mostrar{opacity:1;animation:frasePop .5s ease}
+@keyframes frasePop{0%{transform:scale(.6)}60%{transform:scale(1.12)}100%{transform:scale(1)}}
+
+.fase-surpresa{display:none;text-align:center;padding-top:10px}
+.fase-surpresa h2{color:#d63384;font-size:1.5rem;margin-bottom:10px}
+.fase-surpresa p{color:#6c2e7c;font-weight:600;margin-bottom:10px}
+.caixa-container{padding:10px 0}
+.caixa-surpresa{display:inline-block;font-size:130px;cursor:pointer;user-select:none;animation:balancar 1.5s ease-in-out infinite;filter:drop-shadow(0 15px 25px rgba(214,51,132,.4));transition:transform .3s;line-height:1}
+.caixa-surpresa:hover{transform:scale(1.08) rotate(5deg)}
+.caixa-surpresa.aberta{animation:explodirCaixa .8s ease forwards}
+@keyframes balancar{0%,100%{transform:rotate(-8deg) scale(1)}50%{transform:rotate(8deg) scale(1.05)}}
+@keyframes explodirCaixa{0%{transform:scale(1);opacity:1}40%{transform:scale(1.4);opacity:1}70%{transform:scale(.8);opacity:.8}100%{transform:scale(0);opacity:0}}
+.dica-caixa{color:#a0437a;font-weight:700;font-size:.95rem;margin-top:10px;animation:pulsar 1s ease-in-out infinite alternate}
+.dica-caixa.escondida{display:none}
+
+.gift-card{display:none;background:linear-gradient(135deg,#fff0f6,#f0e5ff);border-radius:22px;padding:26px 20px;margin-top:20px;border:3px solid #d63384;box-shadow:0 15px 40px rgba(214,51,132,.35);text-align:center}
+.gift-card.visivel{display:block;animation:giftIn .7s cubic-bezier(.175,.885,.32,1.275)}
+@keyframes giftIn{0%{transform:scale(.4) rotate(-8deg);opacity:0}60%{transform:scale(1.06) rotate(2deg);opacity:1}100%{transform:scale(1) rotate(0);opacity:1}}
+.gift-icon{font-size:60px;display:inline-block;animation:pulsar 1s ease-in-out infinite alternate}
+.gift-value{font-size:clamp(2rem,7vw,2.8rem);font-weight:900;color:#d63384;margin:8px 0;text-shadow:2px 2px 6px rgba(214,51,132,.25);letter-spacing:-1px}
+.gift-text{font-size:1.05rem;color:#6c2e7c;margin-bottom:14px;font-weight:700}
+.dedication{background:#fff;border-radius:14px;padding:18px;margin:16px 0;text-align:left;border-left:5px solid #d63384}
+.dedication p{color:#5c2a5e;font-size:.98rem;line-height:1.65;margin-bottom:10px}
+.dedication .assinatura{text-align:right;font-weight:800;color:#d63384;font-style:italic;margin-top:12px;font-size:1.05rem}
+.btn-fechar-jogo{width:100%;padding:14px 32px;font-size:1rem;font-weight:800;color:#fff;background:linear-gradient(135deg,#d63384,#a855f7);border:none;border-radius:50px;cursor:pointer;font-family:inherit;box-shadow:0 6px 18px rgba(214,51,132,.4);transition:transform .2s;margin-top:10px}
+.btn-fechar-jogo:hover{transform:scale(1.03)}
+
+@media(max-width:500px){
+  .jogo-modal{padding:26px 18px 22px;border-radius:20px}
+  .opcao{padding:13px 16px}
+  .caixa-surpresa{font-size:110px}
+  .btn-nav{padding:8px 12px;font-size:22px}
+  .titulo{padding:60px 16px 16px}
+  .dedication{padding:14px}
+  .som-video{padding:8px 12px;font-size:.8rem;bottom:10px;right:10px}
+}
+@media(max-width:360px){
+  .caixa-surpresa{font-size:90px}
+  .gift-value{font-size:1.8rem}
+}
+    </style>
+
+</head>
+<body>
+<div class="fundo-festas" id="fundoFestas"></div>
+
+<button class="musica-btn off" id="btnMusica" aria-label="Ligar/desligar música" title="Ligar/desligar música">🔇</button>
+
+<div class="titulo">
+  <h1>🎈 Feliz Aniversário 🎈<br>Jhamilly Loren! 💖</h1>
+  <p>Minha filha amada, você é o brilho da nossa vida! ✨🙏</p>
+</div>
+
+<div class="carrossel">
+  <div class="carrossel-tela" id="telaCarrossel">
+    <div class="impacto" id="impacto">💥</div>
+  </div>
+  <button class="btn-nav btn-esq" id="btnEsq" aria-label="Anterior">❮</button>
+  <button class="btn-nav btn-dir" id="btnDir" aria-label="Próxima">❯</button>
+</div>
+
+<div class="pontos" id="pontos"></div>
+
+<button class="btn-jogo" id="btnJogo">🎁 Abrir meu presente 🎁</button>
+
+<div class="mensagem-final">
+  <p>💝 Que Deus te abençoe sempre! 💝</p>
+  <p>Com todo amor do coração! 💕</p>
+  <p class="emoji-alegria">🎂🎉🥳🎁✨</p>
+</div>
+
+<div class="jogo-overlay" id="jogoOverlay">
+  <div class="jogo-modal">
+    <button class="fechar-jogo" id="fecharJogo" aria-label="Fechar">✕</button>
+
+    <div class="senha-tela" id="telaSenha">
+      <h2>🔐 Só quem sabe pode entrar!</h2>
+      <p class="dica" id="senhaDica"></p>
+      <input type="text" class="senha-input" id="senhaInput" placeholder="DDMMAAAA" maxlength="10" inputmode="numeric" autocomplete="off">
+      <p class="senha-erro" id="senhaErro"></p>
+      <button class="btn-principal" id="btnValidarSenha">Entrar no jogo 🚀</button>
+    </div>
+
+    <div id="jogoFase" style="display:none">
+      <div class="progresso"><div class="progresso-barra" id="progressoBarra"></div></div>
+      <div class="contador">
+        <span>Pergunta <strong id="numPergunta">1</strong> de <strong id="totalPerguntas">5</strong></span>
+        <span class="tentativas" id="tentativasEl">Tentativas: 0</span>
+      </div>
+      <h2 class="pergunta" id="perguntaTexto"></h2>
+      <div class="opcoes" id="opcoes"></div>
+      <p class="frase-revelada" id="fraseRevelada"></p>
+    </div>
+
+    <div class="fase-surpresa" id="faseSurpresa">
+      <h2>🎉 Parabéns, você conseguiu! 🎉</h2>
+      <p>5 acertos! Agora tem uma surpresa esperando por você...</p>
+      <div class="caixa-container">
+        <div class="caixa-surpresa" id="caixaSurpresa">🎁</div>
+        <p class="dica-caixa" id="dicaCaixa">👆 Clique na caixa!</p>
+      </div>
+      <div class="gift-card" id="giftCard">
+        <div class="gift-icon">💸</div>
+        <h2 style="color:#d63384;margin-bottom:4px">🎁 Surpresa! 🎁</h2>
+        <p class="gift-value" id="giftValor">R$ 100,00</p>
+        <p class="gift-text">via PIX 💳</p>
+        <div class="dedication" id="dedication"></div>
+        <button class="btn-fechar-jogo" id="btnFecharFinal">Voltar ao início 💖</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+    /* ============================================================
+   ⚙️ CONFIGURAÇÃO — AJUSTE AQUI
+   ============================================================ */
+
+const TOTAL_FOTOS = 50;
+const EXT_FOTOS = 'jpg';
+
+// 🎬 VÍDEOS — a chave é DEPOIS DE QUAL FOTO o vídeo aparece
+// Exemplo: 5: 'video1.mp4' → vídeo toca após a foto 5
+const videosPorPosicao = {
+  5:  'video1.mp4',
+  15: 'video2.mp4',
+  30: 'video3.mp4'
+};
+
+// 🔐 Senha: data de nascimento (DDMMAAAA)
+const SENHA = '06112026';
+const SENHA_DICA = 'Dica: sua data de nascimento (dia + mês + ano) — ex: 06112026';
+
+const PRESENTE_VALOR = 'R$ 100,00';
+
+const CARTA_DEDICATORIA = `
+  <p>Minha filha amada <strong>Jhamilly Loren</strong>,</p>
+  <p>Hoje é seu dia, e eu queria poder te dar o mundo inteiro. Como não posso, aqui vai um pedacinho do meu amor em forma de PIX! 💸</p>
+  <p>Você é a razão do meu sorriso, minha maior alegria, meu orgulho. Cada dia ao seu lado é um presente que Deus me deu. Que você seja sempre essa menina iluminada, cheia de sonhos, e que nunca perca essa alegria contagiante.</p>
+  <p>Te amo mais que tudo nessa vida, filha! 💖</p>
+  <p class="assinatura">Com todo meu amor,<br>Papai Fabio Resende 💕</p>
+`;
+
+const perguntas = [
+  {
+    pergunta: "Quem é a neném do papai?",
+    opcoes: ["A Maria", "A Karla", "Jhamilly Loren! 💖", "A Ana Clara"],
+    correta: 2,
+    frase: "Isso mesmo! Você é a neném do papai, Jhamilly Loren! 💕"
+},
+  {
+    pergunta: "Quanto o papai te ama?",
+    opcoes: ["Um pouquinho só", "Só nas férias", "Mais que tudo no mundo!", "Não sei..."],
+    correta: 2,
+    frase: "Infinito e além! O amor do papai não tem fim! 🚀"
+  },
+  {
+    pergunta: "Se o papai pudesse te dar o mundo, ele daria?",
+    opcoes: ["Claro que sim! 🌍", "Talvez...", "Só se fosse de graça", "Não daria não"],
+    correta: 0,
+    frase: "Sem pensar duas vezes! Tudo por você, filha! 🌍"
+  },
+  {
+    pergunta: "Quem é a pessoa mais importante pro papai?",
+    opcoes: ["O cachorro 🐶", "O vizinho", "Você, minha filha! 💖", "O papagaio"],
+    correta: 2,
+    frase: "Você é tudo pra mim, Jhamilly Loren! 💕"
+  },
+  {
+    pergunta: "O que o papai mais deseja pra você hoje?",
+    opcoes: ["Um carro novo", "Toda felicidade do mundo! ✨", "Um celular", "Um videogame"],
+    correta: 1,
+    frase: "Que você seja muito, muito feliz! Sempre! 🌟"
+  }
+];
+
+/* ============================================================
+   🚫 NÃO PRECISA MEXER DAQUI PARA BAIXO
+   ============================================================ */
+
+function criarPlaceholder(texto) {
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600">
+    <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffd1dc"/><stop offset="1" stop-color="#c9a7ff"/>
+    </linearGradient></defs>
+    <rect width="800" height="600" fill="url(#g)"/>
+    <text x="400" y="290" font-size="70" text-anchor="middle">💖</text>
+    <text x="400" y="370" font-size="30" fill="#fff" text-anchor="middle" font-family="Arial" font-weight="700">${texto}</text>
+  </svg>`;
+  return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+}
+
+// Montar lista de mídia (fotos + vídeos intercalados)
+const listaMidia = [];
+for (let i = 1; i <= TOTAL_FOTOS; i++) {
+  listaMidia.push({ tipo: 'foto', arquivo: `foto${i}.${EXT_FOTOS}`, legenda: 'Jhamilly Loren' });
+  if (videosPorPosicao[i]) {
+    listaMidia.push({ tipo: 'video', arquivo: videosPorPosicao[i], legenda: 'Vídeo especial' });
+  }
+}
+
+const emojisExplosao = ['🎈','❤️','💕','💖','💗','💝','🌸','✨','🌟','🎉','🥳','🎀','💐','🌹','💫','🎊','💓','💞','🎁','🎂','💥','🔥'];
+const tempoPorFoto = 3800;
+
+// ====================================================
+// 🎵 MÚSICA
+// ====================================================
+let audioCtx = null;
+let musicaAtiva = false;
+let musicaTimer = null;
+
+function playHappyBirthday(ctx) {
+  const notas = [
+    [392.00,0.35],[392.00,0.35],[440.00,0.35],[392.00,0.35],[523.25,0.35],[493.88,0.65],
+    [392.00,0.35],[392.00,0.35],[440.00,0.35],[392.00,0.35],[587.33,0.35],[523.25,0.65],
+    [392.00,0.35],[392.00,0.35],[783.99,0.35],[659.25,0.35],[523.25,0.35],[493.88,0.35],[440.00,0.65],
+    [698.46,0.35],[698.46,0.35],[659.25,0.35],[523.25,0.35],[587.33,0.35],[523.25,0.7]
+  ];
+  const inicio = ctx.currentTime + 0.1;
+  let tempo = inicio;
+  notas.forEach(([freq, dur]) => {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.value = freq;
+    gain.gain.setValueAtTime(0, tempo);
+    gain.gain.linearRampToValueAtTime(0.15, tempo + 0.05);
+    gain.gain.exponentialRampToValueAtTime(0.001, tempo + dur * 0.9);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(tempo);
+    osc.stop(tempo + dur);
+    tempo += dur;
+  });
+  return tempo;
+}
+
+function tocarMusica() {
+  if (!musicaAtiva) return;
+  if (!audioCtx) {
+    try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+    catch (e) { return; }
+  }
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  const fim = playHappyBirthday(audioCtx);
+  const espera = (fim - audioCtx.currentTime + 2.5) * 1000;
+  musicaTimer = setTimeout(() => { if (musicaAtiva) tocarMusica(); }, espera);
+}
+
+function pararMusica() {
+  clearTimeout(musicaTimer);
+  if (audioCtx) {
+    try { audioCtx.close(); } catch (e) {}
+    audioCtx = null;
+  }
+}
+
+const btnMusica = document.getElementById('btnMusica');
+btnMusica.addEventListener('click', () => {
+  musicaAtiva = !musicaAtiva;
+  if (musicaAtiva) {
+    btnMusica.textContent = '🔊';
+    btnMusica.classList.remove('off');
+    tocarMusica();
+  } else {
+    btnMusica.textContent = '🔇';
+    btnMusica.classList.add('off');
+    pararMusica();
+  }
+});
+
+// ====================================================
+// 🖼️ CARROSSEL (com fotos E vídeos)
+// ====================================================
+let indiceAtual = 0;
+let temporizador = null;
+let estaPausado = false;
+
+const tela = document.getElementById('telaCarrossel');
+const pontosContainer = document.getElementById('pontos');
+const impactoEl = document.getElementById('impacto');
+const carrossel = document.querySelector('.carrossel');
+
+listaMidia.forEach((midia, i) => {
+  const caixa = document.createElement('div');
+  caixa.className = 'carrossel-foto' + (i === 0 ? ' ativa' : '');
+  caixa.id = `foto-${i}`;
+
+  if (midia.tipo === 'foto') {
+    const ph = criarPlaceholder(midia.legenda);
+    caixa.innerHTML = `
+      <img src="${midia.arquivo}" alt="${midia.legenda}" loading="lazy"
+           onerror="this.onerror=null; this.src='${ph}'">
+      <div class="explosao" id="exp-${i}"></div>
+    `;
+  } else {
+    caixa.innerHTML = `
+      <video src="${midia.arquivo}" 
+             muted 
+             playsinline 
+             preload="metadata"
+             onerror="this.style.display='none'">
+      </video>
+      <button class="som-video" data-video="video-${i}" aria-label="Ativar som">
+        🔇 Toque para ouvir
+      </button>
+      <div class="explosao" id="exp-${i}"></div>
+    `;
+    // Marcar o vídeo com id
+    caixa.querySelector('video').id = `video-${i}`;
+  }
+
+  tela.appendChild(caixa);
+
+  const p = document.createElement('span');
+  p.className = 'ponto' + (i === 0 ? ' ativo' : '') + (midia.tipo === 'video' ? ' video' : '');
+  p.onclick = () => irParaFoto(i);
+  pontosContainer.appendChild(p);
+});
+
+// Botão de som dos vídeos
+tela.addEventListener('click', (e) => {
+  const btn = e.target.closest('.som-video');
+  if (!btn) return;
+  const vid = document.getElementById(btn.dataset.video);
+  if (!vid) return;
+  vid.muted = !vid.muted;
+  if (vid.muted) {
+    btn.classList.remove('tocando');
+    btn.innerHTML = '🔇 Toque para ouvir';
+  } else {
+    btn.classList.add('tocando');
+    btn.innerHTML = '🔊 Som ativado';
+    vid.play().catch(() => {});
+  }
+});
+
+function fazerExplosao(i) {
+  const c = document.getElementById(`exp-${i}`);
+  if (!c) return;
+  c.innerHTML = '';
+  for (let k = 0; k < 30; k++) {
+    const p = document.createElement('span');
+    p.className = 'particula';
+    p.textContent = emojisExplosao[Math.floor(Math.random() * emojisExplosao.length)];
+    const ang = (Math.PI * 2 / 30) * k;
+    const dist = 100 + Math.random() * 130;
+    p.style.setProperty('--tx', Math.cos(ang) * dist + 'px');
+    p.style.setProperty('--ty', Math.sin(ang) * dist + 'px');
+    p.style.animationDelay = (Math.random() * 0.35) + 's';
+    p.addEventListener('animationend', () => p.remove(), { once: true });
+    c.appendChild(p);
+  }
+}
+
+function mostrarImpacto() {
+  impactoEl.style.animation = 'none';
+  void impactoEl.offsetHeight;
+  impactoEl.style.animation = 'impacto 0.8s ease-out forwards';
+}
+
+function pararTodosVideos() {
+  document.querySelectorAll('#telaCarrossel video').forEach(v => {
+    try { v.pause(); v.currentTime = 0; v.onended = null; } catch (e) {}
+  });
+}
+
+function irParaFoto(nova) {
+  if (nova === indiceAtual) return;
+
+  // Pausa vídeo atual
+  pararTodosVideos();
+
+  const atual = document.getElementById(`foto-${indiceAtual}`);
+  const pontoAtual = pontosContainer.children[indiceAtual];
+  atual.classList.remove('ativa');
+  atual.classList.add('saindo');
+  pontoAtual.classList.remove('ativo');
+
+  indiceAtual = nova;
+
+  const novaFoto = document.getElementById(`foto-${indiceAtual}`);
+  const novoPonto = pontosContainer.children[indiceAtual];
+  novaFoto.classList.remove('saindo');
+  novaFoto.classList.add('ativa');
+  novoPonto.classList.add('ativo');
+
+  mostrarImpacto();
+  fazerExplosao(indiceAtual);
+
+  // Se é vídeo, toca e espera terminar; senão, agenda próxima foto
+  const midiaAtual = listaMidia[indiceAtual];
+  if (midiaAtual.tipo === 'video') {
+    clearInterval(temporizador);
+    const vid = novaFoto.querySelector('video');
+    if (vid) {
+      vid.play().catch(() => {
+        // Se autoplay falhar, tenta avançar depois de 5s
+        temporizador = setTimeout(proxima, 5000);
+      });
+      vid.onended = () => proxima();
+      // Segurança: se o vídeo travar, avança depois de 60s no máximo
+      setTimeout(() => {
+        if (indiceAtual === nova && vid.paused === false) return;
+      }, 60000);
+    }
+  } else {
+    iniciarAuto();
+  }
+}
+
+function proxima() { irParaFoto((indiceAtual + 1) % listaMidia.length); }
+function anterior() { irParaFoto((indiceAtual - 1 + listaMidia.length) % listaMidia.length); }
+
+function iniciarAuto() {
+  clearInterval(temporizador);
+  if (estaPausado) return;
+  // Se o item atual é vídeo, não usa timer (deixa o vídeo controlar)
+  if (listaMidia[indiceAtual].tipo === 'video') return;
+  temporizador = setInterval(proxima, tempoPorFoto);
+}
+
+document.getElementById('btnEsq').onclick = anterior;
+document.getElementById('btnDir').onclick = proxima;
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowLeft') anterior();
+  if (e.key === 'ArrowRight') proxima();
+});
+
+let touchX = 0;
+tela.addEventListener('touchstart', e => { touchX = e.touches[0].clientX; }, { passive: true });
+tela.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - touchX;
+  if (Math.abs(dx) > 50) dx < 0 ? proxima() : anterior();
+}, { passive: true });
+
+carrossel.addEventListener('mouseenter', () => {
+  estaPausado = true;
+  clearInterval(temporizador);
+});
+carrossel.addEventListener('mouseleave', () => {
+  estaPausado = false;
+  iniciarAuto();
+});
+
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) {
+    clearInterval(temporizador);
+    pararTodosVideos();
+  } else {
+    iniciarAuto();
+  }
+});
+
+fazerExplosao(0);
+mostrarImpacto();
+
+// Se o primeiro item for vídeo, toca; senão, agenda normalmente
+if (listaMidia[0].tipo === 'video') {
+  const v = document.querySelector('#foto-0 video');
+  if (v) { v.play().catch(() => {}); v.onended = () => proxima(); }
+} else {
+  iniciarAuto();
+}
+
+// Fundo flutuante
+const fundo = document.getElementById('fundoFestas');
+const emojisFundo = ['🎈','❤️','💕','💖','✨','🌸','🌹','💫','🎊'];
+function criarFlutuante() {
+  const el = document.createElement('span');
+  el.className = 'flutuante';
+  el.textContent = emojisFundo[Math.floor(Math.random() * emojisFundo.length)];
+  el.style.left = Math.random() * 100 + '%';
+  el.style.setProperty('--dur', (4 + Math.random() * 5) + 's');
+  el.style.fontSize = (18 + Math.random() * 22) + 'px';
+  el.addEventListener('animationend', () => el.remove(), { once: true });
+  fundo.appendChild(el);
+}
+setInterval(criarFlutuante, 300);
+
+// ====================================================
+// 🎮 LÓGICA DO JOGO
+// ====================================================
+const overlay         = document.getElementById('jogoOverlay');
+const telaSenha       = document.getElementById('telaSenha');
+const senhaInput      = document.getElementById('senhaInput');
+const senhaErro       = document.getElementById('senhaErro');
+const btnValidarSenha = document.getElementById('btnValidarSenha');
+const jogoFase        = document.getElementById('jogoFase');
+const faseSurpresa    = document.getElementById('faseSurpresa');
+const progressoBarra  = document.getElementById('progressoBarra');
+const numPerguntaEl   = document.getElementById('numPergunta');
+const totalPerguntasEl= document.getElementById('totalPerguntas');
+const perguntaTextoEl = document.getElementById('perguntaTexto');
+const opcoesEl        = document.getElementById('opcoes');
+const fraseReveladaEl = document.getElementById('fraseRevelada');
+const tentativasEl    = document.getElementById('tentativasEl');
+const caixaSurpresa   = document.getElementById('caixaSurpresa');
+const dicaCaixa       = document.getElementById('dicaCaixa');
+const giftCard        = document.getElementById('giftCard');
+
+let perguntaAtual = 0;
+let tentativas = 0;
+let bloqueado = false;
+
+document.getElementById('senhaDica').textContent = SENHA_DICA;
+totalPerguntasEl.textContent = perguntas.length;
+document.getElementById('giftValor').textContent = PRESENTE_VALOR;
+document.getElementById('dedication').innerHTML = CARTA_DEDICATORIA;
+
+function normalizarSenha(s) { return s.replace(/\D/g, ''); }
+
+function abrirJogo() {
+  estaPausado = true;
+  clearInterval(temporizador);
+  pararTodosVideos();
+
+  perguntaAtual = 0;
+  tentativas = 0;
+  bloqueado = false;
+  senhaInput.value = '';
+  senhaErro.textContent = '';
+  senhaInput.classList.remove('errada');
+  telaSenha.style.display = 'block';
+  jogoFase.style.display = 'none';
+  faseSurpresa.style.display = 'none';
+  giftCard.classList.remove('visivel');
+  caixaSurpresa.classList.remove('aberta');
+  dicaCaixa.classList.remove('escondida');
+  progressoBarra.style.width = '0%';
+  atualizarTentativas();
+
+  overlay.classList.add('ativo');
+
+  if (!musicaAtiva) {
+    musicaAtiva = true;
+    btnMusica.textContent = '🔊';
+    btnMusica.classList.remove('off');
+    tocarMusica();
+  }
+
+  setTimeout(() => senhaInput.focus(), 400);
+}
+
+function fecharJogo() {
+  overlay.classList.remove('ativo');
+  estaPausado = false;
+  iniciarAuto();
+}
+
+function validarSenha() {
+  const valor = normalizarSenha(senhaInput.value);
+  const correta = normalizarSenha(SENHA);
+  if (valor === correta) {
+    telaSenha.style.display = 'none';
+    jogoFase.style.display = 'block';
+    mostrarPergunta();
+  } else {
+    senhaErro.textContent = 'Ops! Senha incorreta. Tente de novo 💔';
+    senhaInput.classList.add('errada');
+    setTimeout(() => senhaInput.classList.remove('errada'), 600);
+    senhaInput.value = '';
+    senhaInput.focus();
+  }
+}
+
+function mostrarPergunta() {
+  bloqueado = false;
+  const q = perguntas[perguntaAtual];
+  numPerguntaEl.textContent = perguntaAtual + 1;
+  perguntaTextoEl.textContent = q.pergunta;
+  fraseReveladaEl.textContent = '';
+  fraseReveladaEl.classList.remove('mostrar');
+  progressoBarra.style.width = (perguntaAtual / perguntas.length * 100) + '%';
+
+  opcoesEl.innerHTML = '';
+  q.opcoes.forEach((opcao, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'opcao';
+    btn.textContent = opcao;
+    btn.onclick = () => responder(i, btn);
+    opcoesEl.appendChild(btn);
+  });
+}
+
+function atualizarTentativas() {
+  tentativasEl.textContent = `Tentativas: ${tentativas}`;
+}
+
+function responder(index, btnClicado) {
+  if (bloqueado) return;
+  const q = perguntas[perguntaAtual];
+  const botoes = opcoesEl.querySelectorAll('.opcao');
+
+  if (index === q.correta) {
+    bloqueado = true;
+    btnClicado.classList.add('correta');
+    botoes.forEach(b => { b.disabled = true; if (b !== btnClicado) b.classList.add('apagada'); });
+    progressoBarra.style.width = ((perguntaAtual + 1) / perguntas.length * 100) + '%';
+    fraseReveladaEl.textContent = q.frase;
+    fraseReveladaEl.classList.add('mostrar');
+    criarExplosaoBotao(btnClicado);
+
+    setTimeout(() => {
+      perguntaAtual++;
+      if (perguntaAtual < perguntas.length) mostrarPergunta();
+      else mostrarSurpresa();
+    }, 1900);
+  } else {
+    tentativas++;
+    atualizarTentativas();
+    btnClicado.classList.add('errada');
+    setTimeout(() => btnClicado.classList.remove('errada'), 600);
+  }
+}
+
+function criarExplosaoBotao(origem) {
+  const rect = origem.getBoundingClientRect();
+  const cx = rect.left + rect.width / 2;
+  const cy = rect.top + rect.height / 2;
+  const em = ['🎉','✨','🌟','💖','🎈','💫','⭐'];
+  for (let i = 0; i < 14; i++) {
+    const s = document.createElement('span');
+    s.textContent = em[Math.floor(Math.random() * em.length)];
+    s.style.cssText = `position:fixed;left:${cx}px;top:${cy}px;font-size:${18 + Math.random() * 16}px;pointer-events:none;z-index:300`;
+    document.body.appendChild(s);
+    const ang = Math.random() * Math.PI * 2;
+    const dist = 60 + Math.random() * 120;
+    s.animate([
+      { transform: 'translate(-50%,-50%) scale(.2)', opacity: 0 },
+      { transform: `translate(calc(-50% + ${Math.cos(ang) * dist * .4}px), calc(-50% + ${Math.sin(ang) * dist * .4}px)) scale(1.2)`, opacity: 1, offset: .3 },
+      { transform: `translate(calc(-50% + ${Math.cos(ang) * dist}px), calc(-50% + ${Math.sin(ang) * dist}px)) scale(.6)`, opacity: 0 }
+    ], { duration: 900 + Math.random() * 400, easing: 'cubic-bezier(.15,.7,.35,1)', fill: 'forwards' })
+    .onfinish = () => s.remove();
+  }
+}
+
+function mostrarSurpresa() {
+  jogoFase.style.display = 'none';
+  faseSurpresa.style.display = 'block';
+  progressoBarra.style.width = '100%';
+}
+
+caixaSurpresa.addEventListener('click', () => {
+  if (caixaSurpresa.classList.contains('aberta')) return;
+  caixaSurpresa.classList.add('aberta');
+  dicaCaixa.classList.add('escondida');
+
+  const r = caixaSurpresa.getBoundingClientRect();
+  const cx = r.left + r.width / 2;
+  const cy = r.top + r.height / 2;
+  const em = ['🎉','✨','💸','💖','🎈','⭐','💫','🎊'];
+  for (let i = 0; i < 28; i++) {
+    const s = document.createElement('span');
+    s.textContent = em[Math.floor(Math.random() * em.length)];
+    s.style.cssText = `position:fixed;left:${cx}px;top:${cy}px;font-size:${20 + Math.random() * 24}px;pointer-events:none;z-index:300`;
+    document.body.appendChild(s);
+    const ang = Math.random() * Math.PI * 2;
+    const dist = 100 + Math.random() * 200;
+    s.animate([
+      { transform: 'translate(-50%,-50%) scale(.2)', opacity: 0 },
+      { transform: `translate(calc(-50% + ${Math.cos(ang) * dist * .4}px), calc(-50% + ${Math.sin(ang) * dist * .4}px)) scale(1.3)`, opacity: 1, offset: .25 },
+      { transform: `translate(calc(-50% + ${Math.cos(ang) * dist}px), calc(-50% + ${Math.sin(ang) * dist}px)) scale(.7)`, opacity: 0 }
+    ], { duration: 1400 + Math.random() * 800, easing: 'cubic-bezier(.15,.7,.35,1)', fill: 'forwards' })
+    .onfinish = () => s.remove();
+  }
+  setTimeout(() => giftCard.classList.add('visivel'), 650);
+});
+
+document.getElementById('btnJogo').addEventListener('click', abrirJogo);
+btnValidarSenha.addEventListener('click', validarSenha);
+senhaInput.addEventListener('keypress', e => { if (e.key === 'Enter') validarSenha(); });
+document.getElementById('fecharJogo').addEventListener('click', fecharJogo);
+document.getElementById('btnFecharFinal').addEventListener('click', fecharJogo);
+overlay.addEventListener('click', e => { if (e.target === overlay) fecharJogo(); });
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && overlay.classList.contains('ativo')) fecharJogo();
+});
+</script>
+</body>
+</html>
