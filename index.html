@@ -10,7 +10,7 @@
 
     <style>
         *{margin:0;padding:0;box-sizing:border-box}
-body{min-height:100vh;background:linear-gradient(135deg,#ff9a9e 0%,#fad0c4 50%,#ffecd2 100%);font-family:Arial,sans-serif;overflow-x:hidden;position:relative}
+body{min-height:100vh;background:linear-gradient(135deg,#ff9adc 0%,#fad0c4 50%,#ffecd2 100%);font-family:Arial,sans-serif;overflow-x:hidden;position:relative}
 
 .musica-btn{position:fixed;top:15px;right:15px;width:48px;height:48px;border-radius:50%;border:none;background:rgba(255,255,255,.9);font-size:22px;cursor:pointer;z-index:300;box-shadow:0 4px 15px rgba(0,0,0,.2);transition:all .2s;display:grid;place-items:center}
 .musica-btn:hover{transform:scale(1.1);background:#fff}
@@ -145,9 +145,14 @@ body{min-height:100vh;background:linear-gradient(135deg,#ff9a9e 0%,#fad0c4 50%,#
 
 <button class="musica-btn off" id="btnMusica" aria-label="Ligar/desligar música" title="Ligar/desligar música">🔇</button>
 
+<audio id="musicaFundo" loop preload="auto">
+  <source src="aos-olhos-do-pai.mp3" type="audio/mpeg">
+  Seu navegador não suporta o elemento de áudio.
+</audio>
+
 <div class="titulo">
   <h1>🎈 Feliz Aniversário 🎈<br>Jhamilly Loren! 💖</h1>
-  <p>Minha filha amada, você é o brilho da nossa vida! ✨🙏</p>
+  <p>Mesmo de longe, meu coração está inteirinho aí com você hoje. Você é o brilho da nossa vida e o presente mais lindo que Deus nos deu. Te amo além do infinito! ✨🙏💖</p>
 </div>
 
 <div class="carrossel">
@@ -234,10 +239,13 @@ const PRESENTE_VALOR = 'R$ 100,00';
 
 const CARTA_DEDICATORIA = `
   <p>Minha filha amada <strong>Jhamilly Loren</strong>,</p>
-  <p>Hoje é seu dia, e eu queria poder te dar o mundo inteiro. Como não posso, aqui vai um pedacinho do meu amor em forma de PIX! 💸</p>
-  <p>Você é a razão do meu sorriso, minha maior alegria, meu orgulho. Cada dia ao seu lado é um presente que Deus me deu. Que você seja sempre essa menina iluminada, cheia de sonhos, e que nunca perca essa alegria contagiante.</p>
+  <p>Hoje é o seu dia, e eu queria poder te dar um abraço bem apertado, estar aí do seu lado e ver o seu sorriso de pertinho. Como não posso, fiz este cantinho com todo o meu amor, só para você.</p>
+  <p>Você é a razão do meu sorriso, minha maior alegria e o meu maior orgulho. É o brilho da nossa vida e a resposta mais linda que Deus escreveu na nossa história. Cada dia ao seu lado é um presente que Ele me deu. Que você seja sempre essa menina iluminada, cheia de sonhos, e que nunca perca essa alegria contagiante que conquista todo mundo.</p>
+  <p>Mesmo de longe, meu coração está inteirinho aí com você hoje. Que Deus te abençoe, te proteja e realize cada sonho do seu coração.</p>
   <p>Te amo mais que tudo nessa vida, filha! 💖</p>
   <p class="assinatura">Com todo meu amor,<br>Papai Fabio Resende 💕</p>
+  <hr>
+  <p><strong>🎁 Se você leu até aqui… manda seu Pix que papai manda seu presente! 💸✨</strong></p>
 `;
 
 const perguntas = [
@@ -302,72 +310,45 @@ const emojisExplosao = ['🎈','❤️','💕','💖','💗','💝','🌸','✨'
 const tempoPorFoto = 3800;
 
 // ====================================================
-// 🎵 MÚSICA
+// 🎵 MÚSICA — "Aos Olhos do Pai" (Diante do Trono)
 // ====================================================
-let audioCtx = null;
-let musicaAtiva = false;
-let musicaTimer = null;
-
-function playHappyBirthday(ctx) {
-  const notas = [
-    [392.00,0.35],[392.00,0.35],[440.00,0.35],[392.00,0.35],[523.25,0.35],[493.88,0.65],
-    [392.00,0.35],[392.00,0.35],[440.00,0.35],[392.00,0.35],[587.33,0.35],[523.25,0.65],
-    [392.00,0.35],[392.00,0.35],[783.99,0.35],[659.25,0.35],[523.25,0.35],[493.88,0.35],[440.00,0.65],
-    [698.46,0.35],[698.46,0.35],[659.25,0.35],[523.25,0.35],[587.33,0.35],[523.25,0.7]
-  ];
-  const inicio = ctx.currentTime + 0.1;
-  let tempo = inicio;
-  notas.forEach(([freq, dur]) => {
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.type = 'sine';
-    osc.frequency.value = freq;
-    gain.gain.setValueAtTime(0, tempo);
-    gain.gain.linearRampToValueAtTime(0.15, tempo + 0.05);
-    gain.gain.exponentialRampToValueAtTime(0.001, tempo + dur * 0.9);
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.start(tempo);
-    osc.stop(tempo + dur);
-    tempo += dur;
-  });
-  return tempo;
-}
-
-function tocarMusica() {
-  if (!musicaAtiva) return;
-  if (!audioCtx) {
-    try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
-    catch (e) { return; }
-  }
-  if (audioCtx.state === 'suspended') audioCtx.resume();
-  const fim = playHappyBirthday(audioCtx);
-  const espera = (fim - audioCtx.currentTime + 2.5) * 1000;
-  musicaTimer = setTimeout(() => { if (musicaAtiva) tocarMusica(); }, espera);
-}
-
-function pararMusica() {
-  clearTimeout(musicaTimer);
-  if (audioCtx) {
-    try { audioCtx.close(); } catch (e) {}
-    audioCtx = null;
-  }
-}
-
 const btnMusica = document.getElementById('btnMusica');
-btnMusica.addEventListener('click', () => {
-  musicaAtiva = !musicaAtiva;
-  if (musicaAtiva) {
+const musicaFundo = document.getElementById('musicaFundo');
+
+// Função para atualizar visual do botão
+function atualizarBotaoMusica(tocando) {
+  if (tocando) {
     btnMusica.textContent = '🔊';
     btnMusica.classList.remove('off');
-    tocarMusica();
+    btnMusica.classList.add('on');
+    btnMusica.setAttribute('aria-label', 'Desligar música');
+    btnMusica.setAttribute('title', 'Desligar música');
   } else {
     btnMusica.textContent = '🔇';
+    btnMusica.classList.remove('on');
     btnMusica.classList.add('off');
-    pararMusica();
+    btnMusica.setAttribute('aria-label', 'Ligar música');
+    btnMusica.setAttribute('title', 'Ligar música');
+  }
+}
+
+// Clique no botão liga/desliga
+btnMusica.addEventListener('click', () => {
+  if (musicaFundo.paused) {
+    musicaFundo.play().then(() => atualizarBotaoMusica(true))
+      .catch(err => console.warn('Não foi possível tocar a música:', err));
+  } else {
+    musicaFundo.pause();
+    atualizarBotaoMusica(false);
   }
 });
 
+// Sincroniza o botão caso o estado do áudio mude por outro motivo
+musicaFundo.addEventListener('play',  () => atualizarBotaoMusica(true));
+musicaFundo.addEventListener('pause', () => atualizarBotaoMusica(false));
+
+// Estado inicial: desligado
+atualizarBotaoMusica(false);
 // ====================================================
 // 🖼️ CARROSSEL (com fotos E vídeos)
 // ====================================================
