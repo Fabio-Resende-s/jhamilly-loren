@@ -2,761 +2,1544 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🎈 Feliz Aniversário Jhamilly Loren 💖</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>🤖 O Robô da Filha — Jogo com Fotos e Tartarugas</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  body {
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #a1c4fd 100%);
+    min-height: 100vh;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #333;
+  }
+  .wrap { width: 100%; max-width: 500px; }
 
-<!-- 👇 ADICIONE ESTA LINHA AQUI -->
-    <link rel="icon" type="image/jpeg" href="foto12.jpg">
+  header { text-align: center; margin-bottom: 10px; }
+  header h1 { color: #c2185b; font-size: 1.4em; line-height: 1.25; }
+  header p { color: #666; font-size: 0.82em; margin-top: 3px; font-style: italic; }
 
-    <style>
-        *{margin:0;padding:0;box-sizing:border-box}
-body{min-height:100vh;background:linear-gradient(135deg,#ff9adc 0%,#fad0c4 50%,#ffecd2 100%);font-family:Arial,sans-serif;overflow-x:hidden;position:relative}
+  .hud {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255,255,255,0.9);
+    padding: 8px 14px;
+    border-radius: 14px 14px 0 0;
+    font-weight: 700;
+    color: #c2185b;
+    font-size: 0.9em;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  }
+  .hud .restart {
+    background: transparent;
+    border: 2px solid #f8bbd0;
+    color: #c2185b;
+    border-radius: 8px;
+    padding: 3px 8px;
+    font-size: 0.85em;
+    cursor: pointer;
+    font-weight: 700;
+  }
+  .hud .restart:active { background: #f8bbd0; }
 
-.musica-btn{position:fixed;top:15px;right:15px;width:48px;height:48px;border-radius:50%;border:none;background:rgba(255,255,255,.9);font-size:22px;cursor:pointer;z-index:300;box-shadow:0 4px 15px rgba(0,0,0,.2);transition:all .2s;display:grid;place-items:center}
-.musica-btn:hover{transform:scale(1.1);background:#fff}
-.musica-btn.off{opacity:.6}
+  .board-wrap {
+    position: relative;
+    background: #87ceeb;
+    border-radius: 0 0 16px 16px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    aspect-ratio: 3 / 2;
+    width: 100%;
+  }
+  canvas { display: block; width: 100%; height: 100%; touch-action: none; }
 
-.titulo{text-align:center;padding:50px 20px 20px;color:#d63384;text-shadow:2px 2px 4px rgba(0,0,0,.2)}
-.titulo h1{font-size:clamp(1.7rem,6vw,3.5rem);margin-bottom:10px;animation:pulsar 1.5s ease-in-out infinite alternate}
-.titulo p{font-size:clamp(1rem,3vw,1.5rem);color:#6c2e7c}
-@keyframes pulsar{from{transform:scale(1)}to{transform:scale(1.05)}}
+  .overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 240, 245, 0.95);
+    backdrop-filter: blur(4px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    text-align: center;
+    overflow: hidden;
+    z-index: 10;
+  }
+  .overlay.show { display: flex; }
+  .overlay-content {
+    position: relative;
+    z-index: 2;
+    max-width: 360px;
+    width: 100%;
+    max-height: 100%;
+    overflow-y: auto;
+  }
+  .overlay-content h2 {
+    color: #c2185b;
+    font-size: 1.25em;
+    margin-bottom: 8px;
+    line-height: 1.25;
+  }
+  .overlay-content p {
+    color: #555;
+    font-size: 0.85em;
+    line-height: 1.5;
+    margin-bottom: 10px;
+  }
 
-.carrossel{max-width:850px;margin:0 auto;padding:20px;position:relative;z-index:10}
-.carrossel-tela{width:100%;aspect-ratio:4/3;border-radius:20px;overflow:hidden;box-shadow:0 15px 40px rgba(0,0,0,.25);position:relative;background:#000;touch-action:pan-y}
-.carrossel-foto{position:absolute;inset:0;opacity:0;transform:scale(1.4) rotate(12deg);filter:blur(8px);transition:all .9s cubic-bezier(.175,.885,.32,1.275)}
-.carrossel-foto.ativa{opacity:1;transform:scale(1) rotate(0);filter:blur(0)}
-.carrossel-foto.saindo{opacity:0;transform:scale(.2) rotate(-20deg);filter:blur(12px)}
-.carrossel-foto img,
-.carrossel-foto video{width:100%;height:100%;object-fit:cover;display:block;background:#000}
+  .big-emoji {
+    font-size: 2.2em;
+    display: block;
+    margin-bottom: 4px;
+    animation: beat 1.2s infinite;
+  }
+  @keyframes beat {
+    0%,100% { transform: scale(1); }
+    50% { transform: scale(1.12); }
+  }
 
-/* BOTÃO DE SOM NO VÍDEO */
-.som-video{position:absolute;bottom:14px;right:14px;background:rgba(0,0,0,.7);color:#fff;border:none;padding:10px 16px;border-radius:30px;font-size:.9rem;font-weight:700;cursor:pointer;z-index:25;backdrop-filter:blur(6px);transition:all .2s;display:flex;align-items:center;gap:6px;font-family:inherit}
-.som-video:hover{background:rgba(214,51,132,.9);transform:scale(1.05)}
-.som-video.tocando{background:rgba(40,167,69,.9)}
+  .hint-controls {
+    background: rgba(255,255,255,0.8);
+    border-radius: 10px;
+    padding: 8px 12px;
+    margin: 8px 0;
+    font-size: 0.78em;
+    color: #666;
+    line-height: 1.5;
+  }
 
-.explosao{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;width:100%;height:100%}
-.particula{position:absolute;font-size:28px;opacity:0;animation:espalhar 1.2s ease-out forwards}
-@keyframes espalhar{0%{opacity:1;transform:translate(0,0) scale(.2) rotate(0)}60%{opacity:1;transform:translate(var(--tx),var(--ty)) scale(1.4) rotate(180deg)}100%{opacity:0;transform:translate(var(--tx),var(--ty)) scale(.8) rotate(360deg)}}
+  .btn {
+    background: linear-gradient(135deg, #c2185b, #e91e63);
+    color: white;
+    border: none;
+    padding: 11px 24px;
+    border-radius: 12px;
+    font-size: 0.95em;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    font-family: inherit;
+    margin: 4px;
+  }
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(194,24,91,0.4); }
+  .btn:active { transform: scale(0.97); }
 
-.impacto{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:50px;opacity:0;pointer-events:none;z-index:15}
-@keyframes impacto{0%{opacity:0;transform:translate(-50%,-50%) scale(.3)}50%{opacity:1;transform:translate(-50%,-50%) scale(1.6)}100%{opacity:0;transform:translate(-50%,-50%) scale(2.2)}}
+  .photo-reward {
+    width: 170px;
+    height: 130px;
+    margin: 8px auto;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.25);
+    border: 3px solid #fff;
+    background: #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: photoPop 0.6s cubic-bezier(.3,1.5,.6,1);
+  }
+  @keyframes photoPop {
+    0% { transform: scale(0.5) rotate(-10deg); opacity: 0; }
+    100% { transform: scale(1) rotate(0); opacity: 1; }
+  }
+  .photo-reward img { width: 100%; height: 100%; object-fit: cover; }
+  .photo-reward.empty { color: #999; font-size: 0.75em; text-align: center; padding: 8px; flex-direction: column; }
 
-.pontos{text-align:center;margin-top:20px}
-.ponto{display:inline-block;width:14px;height:14px;margin:0 6px;border-radius:50%;background:#ffc8d0;cursor:pointer;transition:all .3s}
-.ponto.ativo{background:#d63384;transform:scale(1.2)}
-.ponto.video{background:#6c9fff}
-.ponto.video.ativo{background:#4f8bff}
+  .reward-msg {
+    font-size: 0.85em !important;
+    color: #c2185b !important;
+    font-weight: 700;
+    margin-bottom: 6px !important;
+  }
 
-.btn-nav{position:absolute;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.8);border:none;font-size:28px;padding:10px 16px;border-radius:50%;cursor:pointer;z-index:20;color:#d63384;box-shadow:0 3px 10px rgba(0,0,0,.2)}
-.btn-esq{left:10px}.btn-dir{right:10px}.btn-nav:hover{background:#fff}
+  .coins-phase {
+    background: linear-gradient(135deg, #fff8e1, #ffecb3);
+    border: 2px solid #ffd54f;
+    border-radius: 12px;
+    padding: 8px 14px;
+    margin: 10px 0;
+    font-size: 0.9em;
+    color: #e65100;
+    font-weight: 700;
+  }
 
-.fundo-festas{position:fixed;inset:0;pointer-events:none;z-index:1;overflow:hidden}
-.flutuante{position:absolute;top:0;animation:subir var(--dur,6s) ease-in-out forwards}
-@keyframes subir{0%{transform:translateY(100vh) rotate(0);opacity:0}15%{opacity:1}85%{opacity:1}100%{transform:translateY(-120px) rotate(360deg);opacity:0}}
+  .total-coins-display {
+    background: linear-gradient(135deg, #fff8e1, #ffe082);
+    border: 3px solid #ffb300;
+    border-radius: 16px;
+    padding: 15px;
+    margin: 12px 0;
+    animation: coinPulse 1s infinite alternate;
+  }
+  @keyframes coinPulse {
+    from { transform: scale(1); }
+    to { transform: scale(1.03); }
+  }
 
-.mensagem-final{text-align:center;padding:30px 20px 50px;font-size:clamp(1.1rem,4vw,1.8rem);color:#d63384;font-weight:bold;position:relative;z-index:10}
-.emoji-alegria{display:inline-block;animation:rodar 3s linear infinite}
-@keyframes rodar{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+  .prize-box {
+    background: linear-gradient(135deg, #fff1f6, #ffe0ec);
+    border: 2px dashed #e91e63;
+    border-radius: 12px;
+    padding: 10px;
+    margin: 8px 0;
+    color: #ad1457;
+    font-weight: 600;
+    font-size: 0.85em;
+    line-height: 1.45;
+  }
 
-.btn-jogo{display:block;margin:10px auto 30px;padding:18px 40px;font-size:clamp(1rem,3.5vw,1.3rem);font-weight:800;color:#fff;background:linear-gradient(135deg,#d63384,#a855f7,#d63384);background-size:200% 200%;border:none;border-radius:50px;cursor:pointer;font-family:inherit;box-shadow:0 10px 30px rgba(214,51,132,.45);position:relative;z-index:20;animation:pulsarJogo 2s ease-in-out infinite,brilhoJogo 3s linear infinite}
-.btn-jogo:hover{transform:scale(1.08)}
-@keyframes pulsarJogo{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
-@keyframes brilhoJogo{0%{background-position:0 50%}100%{background-position:200% 50%}}
+  .controls {
+    display: grid;
+    grid-template-columns: 1fr 1.3fr 1fr;
+    gap: 8px;
+    margin-top: 12px;
+  }
+  .ctrl-btn {
+    background: rgba(255,255,255,0.92);
+    border: 2px solid #f8bbd0;
+    color: #c2185b;
+    font-size: 1.3em;
+    padding: 15px 0;
+    border-radius: 14px;
+    cursor: pointer;
+    font-weight: 700;
+    user-select: none;
+    transition: background 0.1s, transform 0.1s;
+    font-family: inherit;
+  }
+  .ctrl-btn.pressed, .ctrl-btn:active {
+    background: #f8bbd0;
+    transform: scale(0.95);
+  }
+  .ctrl-btn.jump { font-size: 0.9em; }
 
-.jogo-overlay{display:none;position:fixed;inset:0;background:rgba(40,10,30,.75);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:200;padding:20px;overflow-y:auto}
-.jogo-overlay.ativo{display:flex;align-items:center;justify-content:center}
-.jogo-modal{background:linear-gradient(160deg,#fff5f8,#fff);border-radius:26px;padding:32px 26px 28px;max-width:520px;width:100%;box-shadow:0 25px 70px rgba(0,0,0,.35);position:relative;animation:modalIn .45s cubic-bezier(.175,.885,.32,1.275);max-height:calc(100vh - 40px);overflow-y:auto}
-@keyframes modalIn{0%{transform:scale(.7) translateY(30px);opacity:0}100%{transform:scale(1) translateY(0);opacity:1}}
+  .card {
+    background: rgba(255,255,255,0.88);
+    border-radius: 16px;
+    padding: 16px;
+    margin-top: 16px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+  }
+  .card h2 {
+    color: #c2185b;
+    font-size: 1.05em;
+    margin-bottom: 6px;
+  }
+  .card .info {
+    font-size: 0.78em;
+    color: #666;
+    line-height: 1.55;
+    background: #f5f5f5;
+    padding: 10px;
+    border-radius: 10px;
+    margin-bottom: 8px;
+  }
+  .card .info code {
+    background: #ffe4ec;
+    color: #c2185b;
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-size: 0.9em;
+    font-weight: 600;
+  }
+  .card .info .folder-badge {
+    display: inline-block;
+    background: #81c784;
+    color: white;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 0.85em;
+    font-weight: 700;
+  }
 
-.fechar-jogo{position:absolute;top:12px;right:14px;width:36px;height:36px;border-radius:50%;border:none;background:#ffe1ea;color:#d63384;font-size:1.1rem;font-weight:700;cursor:pointer;transition:all .2s;z-index:5}
-.fechar-jogo:hover{background:#d63384;color:#fff;transform:rotate(90deg)}
+  .file-input-wrapper { position: relative; overflow: hidden; display: inline-block; }
+  .file-input-wrapper input[type="file"] { position: absolute; left: -9999px; }
+  .file-input-wrapper label {
+    display: inline-block;
+    background: linear-gradient(135deg, #7e57c2, #ab47bc);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 0.9em;
+    transition: transform 0.15s, box-shadow 0.15s;
+    margin-top: 4px;
+  }
+  .file-input-wrapper label:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(126,87,194,0.4);
+  }
 
-.senha-tela{text-align:center;padding:10px 0}
-.senha-tela h2{color:#d63384;font-size:1.6rem;margin-bottom:8px}
-.senha-tela .dica{color:#a0437a;font-weight:600;font-size:.95rem;margin-bottom:18px;line-height:1.5}
-.senha-input{width:100%;padding:16px;font-size:1.3rem;text-align:center;letter-spacing:3px;border:3px solid #ffc8d0;border-radius:14px;font-family:inherit;color:#6c2e7c;font-weight:700;margin-bottom:14px;transition:border-color .2s}
-.senha-input:focus{outline:none;border-color:#d63384}
-.senha-input.errada{animation:erroAnim .5s ease;border-color:#dc3545}
-@keyframes erroAnim{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-10px)}40%,80%{transform:translateX(10px)}}
-.senha-erro{color:#dc3545;font-weight:700;font-size:.9rem;min-height:22px;margin-bottom:12px}
-.btn-principal{width:100%;padding:16px;font-size:1.05rem;font-weight:800;color:#fff;background:linear-gradient(135deg,#d63384,#a855f7);border:none;border-radius:14px;cursor:pointer;font-family:inherit;box-shadow:0 6px 18px rgba(214,51,132,.4);transition:transform .2s}
-.btn-principal:hover{transform:scale(1.03)}
-.btn-principal:active{transform:scale(.98)}
+  .photo-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+    margin-top: 12px;
+  }
+  .photo-thumb {
+    position: relative;
+    aspect-ratio: 1;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 2px solid #f8bbd0;
+    background: #fce4ec;
+  }
+  .photo-thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .photo-thumb.empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #f8bbd0;
+    font-size: 0.6em;
+    text-align: center;
+    padding: 4px;
+    border-style: dashed;
+  }
+  .photo-thumb .photo-label {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: rgba(194,24,91,0.85);
+    color: white;
+    font-size: 0.5em;
+    text-align: center;
+    padding: 2px;
+    font-weight: 700;
+  }
+  .photo-thumb .remove-btn {
+    position: absolute;
+    top: 2px; right: 2px;
+    background: rgba(0,0,0,0.6);
+    color: white;
+    border: none;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    font-size: 10px;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+  }
+  .photo-thumb .remove-btn:hover { background: #e91e63; }
 
-.progresso{width:100%;height:10px;background:#ffe1ea;border-radius:10px;overflow:hidden;margin-bottom:16px}
-.progresso-barra{height:100%;width:0;background:linear-gradient(90deg,#d63384,#a855f7);border-radius:10px;transition:width .6s cubic-bezier(.175,.885,.32,1.275)}
-.contador{text-align:center;color:#a0437a;font-weight:700;font-size:.9rem;letter-spacing:.5px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
-.contador .tentativas{background:#ffe1ea;padding:4px 12px;border-radius:20px;font-size:.8rem;color:#a0437a}
-.pergunta{font-size:clamp(1.1rem,4vw,1.35rem);color:#6c2e7c;font-weight:800;text-align:center;margin-bottom:22px;line-height:1.4;min-height:60px}
-.opcoes{display:flex;flex-direction:column;gap:11px;margin-bottom:18px}
-.opcao{padding:15px 20px;font-size:clamp(.95rem,3.2vw,1.05rem);font-weight:600;color:#6c2e7c;background:#fff;border:2px solid #ffc8d0;border-radius:14px;cursor:pointer;transition:all .2s;font-family:inherit;text-align:left;min-height:48px}
-.opcao:hover:not(:disabled){background:#fff5f8;border-color:#d63384;transform:translateX(5px)}
-.opcao:disabled{cursor:default}
-.opcao.correta{background:#d4f5da;border-color:#28a745;color:#155724;animation:acertoAnim .55s ease}
-.opcao.errada{background:#f8d7da;border-color:#dc3545;color:#721c24;animation:erroAnim .5s ease}
-.opcao.apagada{opacity:.35}
-@keyframes acertoAnim{0%,100%{transform:scale(1)}40%{transform:scale(1.06)}70%{transform:scale(.98)}}
-.frase-revelada{text-align:center;font-size:1.05rem;font-weight:700;color:#d63384;min-height:50px;opacity:0;transition:opacity .4s;padding:8px;line-height:1.4}
-.frase-revelada.mostrar{opacity:1;animation:frasePop .5s ease}
-@keyframes frasePop{0%{transform:scale(.6)}60%{transform:scale(1.12)}100%{transform:scale(1)}}
+  .hint { text-align: center; color: #777; font-size: 0.75em; margin-top: 12px; line-height: 1.5; }
 
-.fase-surpresa{display:none;text-align:center;padding-top:10px}
-.fase-surpresa h2{color:#d63384;font-size:1.5rem;margin-bottom:10px}
-.fase-surpresa p{color:#6c2e7c;font-weight:600;margin-bottom:10px}
-.caixa-container{padding:10px 0}
-.caixa-surpresa{display:inline-block;font-size:130px;cursor:pointer;user-select:none;animation:balancar 1.5s ease-in-out infinite;filter:drop-shadow(0 15px 25px rgba(214,51,132,.4));transition:transform .3s;line-height:1}
-.caixa-surpresa:hover{transform:scale(1.08) rotate(5deg)}
-.caixa-surpresa.aberta{animation:explodirCaixa .8s ease forwards}
-@keyframes balancar{0%,100%{transform:rotate(-8deg) scale(1)}50%{transform:rotate(8deg) scale(1.05)}}
-@keyframes explodirCaixa{0%{transform:scale(1);opacity:1}40%{transform:scale(1.4);opacity:1}70%{transform:scale(.8);opacity:.8}100%{transform:scale(0);opacity:0}}
-.dica-caixa{color:#a0437a;font-weight:700;font-size:.95rem;margin-top:10px;animation:pulsar 1s ease-in-out infinite alternate}
-.dica-caixa.escondida{display:none}
+  .confetti {
+    position: absolute;
+    top: -20px;
+    border-radius: 2px;
+    animation: fall linear forwards;
+    pointer-events: none;
+    z-index: 1;
+  }
+  @keyframes fall {
+    0% { transform: translateY(0) rotate(0); opacity: 1; }
+    100% { transform: translateY(400px) rotate(720deg); opacity: 0.9; }
+  }
 
-.gift-card{display:none;background:linear-gradient(135deg,#fff0f6,#f0e5ff);border-radius:22px;padding:26px 20px;margin-top:20px;border:3px solid #d63384;box-shadow:0 15px 40px rgba(214,51,132,.35);text-align:center}
-.gift-card.visivel{display:block;animation:giftIn .7s cubic-bezier(.175,.885,.32,1.275)}
-@keyframes giftIn{0%{transform:scale(.4) rotate(-8deg);opacity:0}60%{transform:scale(1.06) rotate(2deg);opacity:1}100%{transform:scale(1) rotate(0);opacity:1}}
-.gift-icon{font-size:60px;display:inline-block;animation:pulsar 1s ease-in-out infinite alternate}
-.gift-value{font-size:clamp(2rem,7vw,2.8rem);font-weight:900;color:#d63384;margin:8px 0;text-shadow:2px 2px 6px rgba(214,51,132,.25);letter-spacing:-1px}
-.gift-text{font-size:1.05rem;color:#6c2e7c;margin-bottom:14px;font-weight:700}
-.dedication{background:#fff;border-radius:14px;padding:18px;margin:16px 0;text-align:left;border-left:5px solid #d63384}
-.dedication p{color:#5c2a5e;font-size:.98rem;line-height:1.65;margin-bottom:10px}
-.dedication .assinatura{text-align:right;font-weight:800;color:#d63384;font-style:italic;margin-top:12px;font-size:1.05rem}
-.btn-fechar-jogo{width:100%;padding:14px 32px;font-size:1rem;font-weight:800;color:#fff;background:linear-gradient(135deg,#d63384,#a855f7);border:none;border-radius:50px;cursor:pointer;font-family:inherit;box-shadow:0 6px 18px rgba(214,51,132,.4);transition:transform .2s;margin-top:10px}
-.btn-fechar-jogo:hover{transform:scale(1.03)}
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: #c2185b;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 0.9em;
+    opacity: 0;
+    transition: all 0.4s;
+    z-index: 1000;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+    text-align: center;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+  .toast.death { background: #e53935; }
 
-@media(max-width:500px){
-  .jogo-modal{padding:26px 18px 22px;border-radius:20px}
-  .opcao{padding:13px 16px}
-  .caixa-surpresa{font-size:110px}
-  .btn-nav{padding:8px 12px;font-size:22px}
-  .titulo{padding:60px 16px 16px}
-  .dedication{padding:14px}
-  .som-video{padding:8px 12px;font-size:.8rem;bottom:10px;right:10px}
-}
-@media(max-width:360px){
-  .caixa-surpresa{font-size:90px}
-  .gift-value{font-size:1.8rem}
-}
-    </style>
-
+  @media (max-width: 380px) {
+    header h1 { font-size: 1.15em; }
+    .hud { font-size: 0.8em; }
+    .overlay-content h2 { font-size: 1.1em; }
+    .photo-reward { width: 140px; height: 100px; }
+  }
+</style>
 </head>
 <body>
-<div class="fundo-festas" id="fundoFestas"></div>
 
-<button class="musica-btn off" id="btnMusica" aria-label="Ligar/desligar música" title="Ligar/desligar música">🔇</button>
+<div class="wrap">
+  <header>
+    <h1>🤖 O Robô da Filha 💖</h1>
+    <p>Pule nas tartarugas 🐢 pra ganhar moedas!</p>
+  </header>
 
-<audio id="musicaFundo" loop preload="auto">
-  <source src="aos-olhos-do-pai.mp3" type="audio/mpeg">
-  Seu navegador não suporta o elemento de áudio.
-</audio>
-
-<div class="titulo">
-  <h1>🎈🙏 Feliz Aniversário 🎈🙏<br>Jhamilly Loren! 💖</h1>
-  <p>Mesmo de longe, meu coração está inteirinho aí com você hoje. Você é o brilho da nossa vida e o presente mais lindo que Deus nos deu. Te amo além do infinito! ✨🙏💖</p>
-</div>
-
-<div class="carrossel">
-  <div class="carrossel-tela" id="telaCarrossel">
-    <div class="impacto" id="impacto">💥</div>
+  <div class="hud">
+    <span>Fase <b id="levelNum">1</b>/10</span>
+    <span>🪙 <b id="coinCount">0</b></span>
+    <button class="restart" onclick="restartLevel()">🔄</button>
   </div>
-  <button class="btn-nav btn-esq" id="btnEsq" aria-label="Anterior">❮</button>
-  <button class="btn-nav btn-dir" id="btnDir" aria-label="Próxima">❯</button>
-</div>
 
-<div class="pontos" id="pontos"></div>
-
-<button class="btn-jogo" id="btnJogo">🎁 Abrir meu presente 🎁</button>
-
-<div class="mensagem-final">
-  <p>💝 Que Deus te abençoe sempre! 💝</p>
-  <p>Com todo amor do coração! 💕</p>
-  <p class="emoji-alegria">🎂🎉🥳🎁✨</p>
-</div>
-
-<div class="jogo-overlay" id="jogoOverlay">
-  <div class="jogo-modal">
-    <button class="fechar-jogo" id="fecharJogo" aria-label="Fechar">✕</button>
-
-    <div class="senha-tela" id="telaSenha">
-      <h2>🔐 Só quem sabe pode entrar!</h2>
-      <p class="dica" id="senhaDica"></p>
-      <input type="text" class="senha-input" id="senhaInput" placeholder="DDMMAAAA" maxlength="10" inputmode="numeric" autocomplete="off">
-      <p class="senha-erro" id="senhaErro"></p>
-      <button class="btn-principal" id="btnValidarSenha">Entrar no jogo 🚀</button>
-    </div>
-
-    <div id="jogoFase" style="display:none">
-      <div class="progresso"><div class="progresso-barra" id="progressoBarra"></div></div>
-      <div class="contador">
-        <span>Pergunta <strong id="numPergunta">1</strong> de <strong id="totalPerguntas">5</strong></span>
-        <span class="tentativas" id="tentativasEl">Tentativas: 0</span>
-      </div>
-      <h2 class="pergunta" id="perguntaTexto"></h2>
-      <div class="opcoes" id="opcoes"></div>
-      <p class="frase-revelada" id="fraseRevelada"></p>
-    </div>
-
-    <div class="fase-surpresa" id="faseSurpresa">
-      <h2>🎉 Parabéns, você conseguiu! 🎉</h2>
-      <p>5 acertos! Agora tem uma surpresa esperando por você...</p>
-      <div class="caixa-container">
-        <div class="caixa-surpresa" id="caixaSurpresa">🎁</div>
-        <p class="dica-caixa" id="dicaCaixa">👆 Clique na caixa!</p>
-      </div>
-      <div class="gift-card" id="giftCard">
-        <div class="gift-icon">💸</div>
-        <h2 style="color:#d63384;margin-bottom:4px">🎁 Surpresa! 🎁</h2>
-        <p class="gift-value" id="giftValor">R$ 100,00</p>
-        <p class="gift-text">via PIX 💳</p>
-        <div class="dedication" id="dedication"></div>
-        <button class="btn-fechar-jogo" id="btnFecharFinal">Voltar ao início 💖</button>
-      </div>
+  <div class="board-wrap">
+    <canvas id="game"></canvas>
+    <div class="overlay show" id="overlay">
+      <div class="overlay-content" id="overlayContent"></div>
     </div>
   </div>
+
+  <div class="controls">
+    <button class="ctrl-btn" id="btnLeft">◀</button>
+    <button class="ctrl-btn jump" id="btnJump">⬆ PULAR</button>
+    <button class="ctrl-btn" id="btnRight">▶</button>
+  </div>
+
+  <div class="card">
+    <h2>📸 Fotos das Fases (10 fotos!)</h2>
+    <div class="info">
+      <strong>OPÇÃO 1 (recomendada):</strong> crie uma pasta chamada <code>fotos</code> do lado deste arquivo HTML e coloque as imagens com os nomes <code>foto1.jpg</code>, <code>foto2.jpg</code>... até <code>foto10.jpg</code>. Elas aparecem com o selo <span class="folder-badge">📁</span>.<br><br>
+      <strong>OPÇÃO 2:</strong> clique no botão roxo abaixo e envie as fotos pelo site. Elas ficam salvas no navegador com o selo <span style="background:#7e57c2;color:white;padding:1px 6px;border-radius:4px;font-size:0.85em;font-weight:700;">📤</span>.
+    </div>
+    <div class="file-input-wrapper">
+      <input type="file" id="photoInput" accept="image/*" multiple>
+      <label for="photoInput">➕ Adicionar fotos pelo site</label>
+    </div>
+    <div class="photo-grid" id="photoGrid"></div>
+  </div>
+
+  <p class="hint">Teclado: ← → andar • ESPAÇO/↑ pular<br>Mobile: use os botões ou deslize para pular<br>🐢 Pule em cima das tartarugas pra ganhar 🪙!</p>
 </div>
+
+<div class="toast" id="toast"></div>
 
 <script>
-    /* ============================================================
-   ⚙️ CONFIGURAÇÃO — AJUSTE AQUI
-   ============================================================ */
+// ═══════════════════════════════════════════════════════════════
+// ⚙️ CONFIGURAÇÃO DE DIFICULDADE
+// ═══════════════════════════════════════════════════════════════
+const RESTART_FROM_LEVEL_1 = false;
+const GRACE_PERIOD_MS = 1500;
+const TOTAL_LEVELS = 10;
+// ═══════════════════════════════════════════════════════════════
 
-const TOTAL_FOTOS = 50;
-const EXT_FOTOS = 'jpg';
+// ═══════════════════════════════════════════════════════════════
+// 📸 CONFIGURAÇÃO DAS FOTOS DA PASTA (10 fotos!)
+// ═══════════════════════════════════════════════════════════════
+const FOLDER_PHOTOS = [
+  "img/foto51.jpg",
+  "img/foto52.jpg",
+  "img/foto57.jpg",
+  "img/foto58.jpg",
+  "img/foto44.jpg",
+  "img/foto54.jpg",
+  "img/foto55.jpg",
+  "img/foto18.jpg",
+  "img/foto13.jpg",
+  "img/foto2.jpg"
+];
 
-// 🎬 VÍDEOS — a chave é DEPOIS DE QUAL FOTO o vídeo aparece
-// Exemplo: 5: 'video1.mp4' → vídeo toca após a foto 5
-const videosPorPosicao = {
-  5:  'video1.mp4',
-  15: 'video2.mp4',
-  30: 'video3.mp4'
-};
+// ═══════════════════════════════════════════════════════════════
+// CONFIG DO JOGO
+// ═══════════════════════════════════════════════════════════════
+const W = 480, H = 320;
+const canvas = document.getElementById('game');
+const ctx = canvas.getContext('2d');
+canvas.width = W;
+canvas.height = H;
 
-// 🔐 Senha: data de nascimento (DDMMAAAA)
-const SENHA = '06112026';
-const SENHA_DICA = 'Dica: sua data de nascimento (dia + mês + ano) — ex: 06112026';
+const GRAVITY = 0.55;
+const JUMP = -11;
+const SPEED = 3.5;
+const MAX_FALL = 12;
+const PW = 24, PH = 28;
+const TW = 26, TH = 22;
 
-const PRESENTE_VALOR = 'R$ 100,00';
+const overlay = document.getElementById('overlay');
+const overlayContent = document.getElementById('overlayContent');
+const levelNumEl = document.getElementById('levelNum');
+const coinCountEl = document.getElementById('coinCount');
+const photoGrid = document.getElementById('photoGrid');
+const photoInput = document.getElementById('photoInput');
+const toast = document.getElementById('toast');
 
-const CARTA_DEDICATORIA = `
-  <p>Minha filha amada <strong>Jhamilly Loren</strong>,</p>
-  <p>Hoje é o seu dia, e eu queria poder te dar um abraço bem apertado, estar aí do seu lado e ver o seu sorriso de pertinho. Como não posso, fiz este cantinho com todo o meu amor, só para você.</p>
-  <p>Você é a razão do meu sorriso, minha maior alegria e o meu maior orgulho. É o brilho da nossa vida e a resposta mais linda que Deus escreveu na nossa história. Cada dia ao seu lado é um presente que Ele me deu. Que você seja sempre essa menina iluminada, cheia de sonhos, e que nunca perca essa alegria contagiante que conquista todo mundo.</p>
-  <p>Mesmo de longe, meu coração está inteirinho aí com você hoje. Que Deus te abençoe, te proteja e realize cada sonho do seu coração.</p>
-  <p>Te amo mais que tudo nessa vida, filha! 💖</p>
-  <p class="assinatura">Com todo meu amor,<br>Papai Fabio Resende 💕</p>
-  <hr>
-  <p><strong>🎁 Se você leu até aqui… manda seu Pix que papai manda seu presente! 💸✨</strong></p>
-`;
+// Fotos
+let localPhotos = JSON.parse(localStorage.getItem('fotosRobo') || '[]');
+let folderPhotosValid = new Array(10).fill(false);
 
-const perguntas = [
-  {
-    pergunta: "Quem é a neném do papai?",
-    opcoes: ["A Maria", "A Karla", "Jhamilly Loren! 💖", "A Ana Clara"],
-    correta: 2,
-    frase: "Isso mesmo! Você é a neném do papai, Jhamilly Loren! 💕"
-},
-  {
-    pergunta: "Quanto o papai te ama?",
-    opcoes: ["Um pouquinho só", "Só nas férias", "Mais que tudo no mundo!", "Não sei..."],
-    correta: 2,
-    frase: "Infinito e além! O amor do papai não tem fim! 🚀"
+function checkFolderPhotos() {
+  return Promise.all(FOLDER_PHOTOS.map((src, i) =>
+    new Promise(resolve => {
+      const img = new Image();
+      img.onload = () => { folderPhotosValid[i] = true; resolve(); };
+      img.onerror = () => { folderPhotosValid[i] = false; resolve(); };
+      img.src = src;
+    })
+  ));
+}
+function getPhotoForLevel(i) {
+  if (folderPhotosValid[i]) return FOLDER_PHOTOS[i];
+  if (localPhotos[i]) return localPhotos[i];
+  return null;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// 10 FASES (progressivamente mais difíceis)
+// ═══════════════════════════════════════════════════════════════
+const LEVELS = [
+  // ─── FASE 1 ───
+  { name: "Primeiro Passo",
+    platforms: [
+      {x:0, y:280, w:480, h:40},
+      {x:180, y:220, w:100, h:16}
+    ],
+    coins: [{x:110, y:245}, {x:230, y:185}, {x:380, y:245}],
+    turtles: [
+      { type: 'ground', x: 280, y: 258, minX: 250, maxX: 460, speed: 1.0 }
+    ],
+    start: {x:30, y:252},
+    goal: {x:430, y:280}
   },
-  {
-    pergunta: "Se o papai pudesse te dar o mundo, ele daria?",
-    opcoes: ["Claro que sim! 🌍", "Talvez...", "Só se fosse de graça", "Não daria não"],
-    correta: 0,
-    frase: "Sem pensar duas vezes! Tudo por você, filha! 🌍"
+  // ─── FASE 2 ───
+  { name: "Pulo do Gato",
+    platforms: [
+      {x:0, y:280, w:160, h:40},
+      {x:260, y:280, w:220, h:40},
+      {x:180, y:210, w:70, h:16}
+    ],
+    coins: [{x:80, y:245}, {x:215, y:175}, {x:330, y:245}, {x:420, y:245}],
+    turtles: [
+      { type: 'ground', x: 340, y: 258, minX: 280, maxX: 460, speed: 1.1 },
+      { type: 'flyer',  x: 210, y: 160, minX: 150, maxX: 250, speed: 1.4 }
+    ],
+    start: {x:30, y:252},
+    goal: {x:430, y:280}
   },
-  {
-    pergunta: "Quem é a pessoa mais importante pro papai?",
-    opcoes: ["O cachorro 🐶", "O vizinho", "Você, minha filha! 💖", "O papagaio"],
-    correta: 2,
-    frase: "Você é tudo pra mim, Jhamilly Loren! 💕"
+  // ─── FASE 3 ───
+  { name: "Escadinha",
+    platforms: [
+      {x:0, y:280, w:480, h:40},
+      {x:100, y:230, w:80, h:16},
+      {x:220, y:180, w:80, h:16},
+      {x:340, y:130, w:80, h:16}
+    ],
+    coins: [{x:60, y:245}, {x:140, y:200}, {x:260, y:150}, {x:380, y:100}],
+    turtles: [
+      { type: 'ground', x: 280, y: 258, minX: 130, maxX: 440, speed: 1.2 },
+      { type: 'flyer',  x: 250, y: 145, minX: 150, maxX: 320, speed: 1.6 }
+    ],
+    start: {x:30, y:252},
+    goal: {x:380, y:130}
   },
-  {
-    pergunta: "O que o papai mais deseja pra você hoje?",
-    opcoes: ["Um carro novo", "Toda felicidade do mundo! ✨", "Um celular", "Um videogame"],
-    correta: 1,
-    frase: "Que você seja muito, muito feliz! Sempre! 🌟"
+  // ─── FASE 4 ───
+  { name: "Zigue-Zague",
+    platforms: [
+      {x:0, y:280, w:120, h:40},
+      {x:60, y:220, w:100, h:16},
+      {x:200, y:170, w:100, h:16},
+      {x:340, y:220, w:100, h:16},
+      {x:400, y:280, w:80, h:40}
+    ],
+    coins: [{x:60, y:250}, {x:110, y:185}, {x:250, y:135}, {x:390, y:185}, {x:440, y:245}],
+    turtles: [
+      { type: 'ground', x: 120, y: 198, minX: 80, maxX: 150, speed: 1.2 },
+      { type: 'flyer',  x: 250, y: 100, minX: 180, maxX: 320, speed: 1.7 }
+    ],
+    start: {x:30, y:252},
+    goal: {x:420, y:280}
+  },
+  // ─── FASE 5 ───
+  { name: "Desafio Final 1",
+    platforms: [
+      {x:0, y:280, w:160, h:40},
+      {x:180, y:240, w:120, h:16},
+      {x:340, y:180, w:80, h:16},
+      {x:400, y:280, w:80, h:40}
+    ],
+    coins: [{x:70, y:245}, {x:240, y:205}, {x:370, y:145}, {x:440, y:245}],
+    turtles: [
+      { type: 'ground', x: 240, y: 218, minX: 190, maxX: 290, speed: 1.5 },
+      { type: 'ground', x: 430, y: 258, minX: 410, maxX: 460, speed: 1.8 },
+      { type: 'flyer',  x: 120, y: 200, minX: 70,  maxX: 170, speed: 1.7 }
+    ],
+    start: {x:30, y:252},
+    goal: {x:370, y:180}
+  },
+  // ─── FASE 6 ───
+  { name: "Mais Tartarugas",
+    platforms: [
+      {x:0, y:280, w:480, h:40},
+      {x:120, y:220, w:100, h:16},
+      {x:280, y:180, w:100, h:16}
+    ],
+    coins: [{x:60, y:245}, {x:170, y:185}, {x:330, y:145}, {x:440, y:245}],
+    turtles: [
+      { type: 'ground', x: 250, y: 258, minX: 180, maxX: 460, speed: 1.3 },
+      { type: 'flyer',  x: 350, y: 130, minX: 260, maxX: 440, speed: 1.5 }
+    ],
+    start: {x:30, y:252},
+    goal: {x:440, y:280}
+  },
+  // ─── FASE 7 ───
+  { name: "Voo Duplo",
+    platforms: [
+      {x:0, y:280, w:140, h:40},
+      {x:240, y:280, w:240, h:40},
+      {x:140, y:210, w:80, h:16}
+    ],
+    coins: [{x:60, y:245}, {x:180, y:175}, {x:340, y:245}, {x:430, y:245}],
+    turtles: [
+      { type: 'ground', x: 300, y: 258, minX: 240, maxX: 450, speed: 1.4 },
+      { type: 'flyer',  x: 100, y: 160, minX: 60,  maxX: 200, speed: 1.6 },
+      { type: 'flyer',  x: 350, y: 180, minX: 280, maxX: 450, speed: 1.7 }
+    ],
+    start: {x:30, y:252},
+    goal: {x:440, y:280}
+  },
+  // ─── FASE 8 ───
+  { name: "Escada do Perigo",
+    platforms: [
+      {x:0, y:280, w:100, h:40},
+      {x:80, y:230, w:80, h:16},
+      {x:180, y:190, w:80, h:16},
+      {x:280, y:230, w:80, h:16},
+      {x:380, y:180, w:100, h:16},
+      {x:380, y:280, w:100, h:40}
+    ],
+    coins: [{x:40, y:245}, {x:110, y:200}, {x:210, y:160}, {x:300, y:200}, {x:420, y:150}, {x:440, y:245}],
+    turtles: [
+      { type: 'ground', x: 420, y: 258, minX: 380, maxX: 460, speed: 1.5 },
+      { type: 'flyer',  x: 220, y: 130, minX: 100, maxX: 320, speed: 1.7 },
+      { type: 'flyer',  x: 300, y: 150, minX: 180, maxX: 360, speed: 1.9 }
+    ],
+    start: {x:30, y:252},
+    goal: {x:420, y:180}
+  },
+  // ─── FASE 9 ───
+  { name: "Corredor",
+    platforms: [
+      {x:0, y:280, w:180, h:40},
+      {x:250, y:250, w:80, h:16},
+      {x:360, y:280, w:120, h:40}
+    ],
+    coins: [{x:70, y:245}, {x:280, y:215}, {x:420, y:245}],
+    turtles: [
+      { type: 'ground', x: 300, y: 258, minX: 250, maxX: 470, speed: 1.8 },
+      { type: 'ground', x: 130, y: 258, minX: 100, maxX: 160, speed: 1.6 },
+      { type: 'flyer',  x: 320, y: 160, minX: 250, maxX: 440, speed: 2.0 }
+    ],
+    start: {x:30, y:252},
+    goal: {x:440, y:280}
+  },
+  // ─── FASE 10 ───
+  { name: "Desafio Supremo",
+    platforms: [
+      {x:0, y:280, w:130, h:40},
+      {x:160, y:240, w:100, h:16},
+      {x:290, y:200, w:90, h:16},
+      {x:400, y:280, w:80, h:40}
+    ],
+    coins: [{x:70, y:245}, {x:210, y:205}, {x:330, y:165}, {x:440, y:245}],
+    turtles: [
+      { type: 'ground', x: 210, y: 218, minX: 170, maxX: 250, speed: 1.6 },
+      { type: 'ground', x: 420, y: 258, minX: 400, maxX: 460, speed: 2.0 },
+      { type: 'flyer',  x: 250, y: 130, minX: 100, maxX: 380, speed: 2.0 },
+      { type: 'flyer',  x: 380, y: 160, minX: 300, maxX: 460, speed: 2.2 }
+    ],
+    start: {x:30, y:252},
+    goal: {x:400, y:280}
   }
 ];
 
-/* ============================================================
-   🚫 NÃO PRECISA MEXER DAQUI PARA BAIXO
-   ============================================================ */
+// ═══════════════════════════════════════════════════════════════
+// ESTADO
+// ═══════════════════════════════════════════════════════════════
+let player, platforms, coins, turtles, goal, levelIndex = 0, gameState;
+let totalCoins = 0;
+let levelCoinsStart = 0;
+let deathTimer = 0;
+let graceTimer = 0;
+let floatingTexts = [];
+let keys = { left: false, right: false };
+let lastTime = 0, accumulator = 0;
+const STEP = 1000 / 60;
+let actx = null;
 
-function criarPlaceholder(texto) {
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600">
-    <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#ffd1dc"/><stop offset="1" stop-color="#c9a7ff"/>
-    </linearGradient></defs>
-    <rect width="800" height="600" fill="url(#g)"/>
-    <text x="400" y="290" font-size="70" text-anchor="middle">💖</text>
-    <text x="400" y="370" font-size="30" fill="#fff" text-anchor="middle" font-family="Arial" font-weight="700">${texto}</text>
-  </svg>`;
-  return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+function beep(freq, dur = 0.08, type = 'sine', vol = 0.06) {
+  try {
+    if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
+    const o = actx.createOscillator();
+    const g = actx.createGain();
+    o.type = type;
+    o.frequency.value = freq;
+    g.gain.setValueAtTime(vol, actx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.0001, actx.currentTime + dur);
+    o.connect(g); g.connect(actx.destination);
+    o.start(); o.stop(actx.currentTime + dur);
+  } catch(e) {}
 }
 
-// Montar lista de mídia (fotos + vídeos intercalados)
-const listaMidia = [];
-for (let i = 1; i <= TOTAL_FOTOS; i++) {
-  listaMidia.push({ tipo: 'foto', arquivo: `foto${i}.${EXT_FOTOS}`, legenda: 'Jhamilly Loren' });
-  if (videosPorPosicao[i]) {
-    listaMidia.push({ tipo: 'video', arquivo: videosPorPosicao[i], legenda: 'Vídeo especial' });
-  }
+function loadLevel(i) {
+  levelIndex = i;
+  levelCoinsStart = totalCoins;
+  const L = LEVELS[i];
+  player = {
+    x: L.start.x, y: L.start.y,
+    vx: 0, vy: 0,
+    w: PW, h: PH,
+    onGround: false,
+    facing: 1
+  };
+  platforms = L.platforms.map(p => ({...p}));
+  coins = L.coins.map(c => ({...c, collected: false}));
+  turtles = (L.turtles || []).map(t => ({
+    type: t.type,
+    flying: t.type === 'flyer',
+    x: t.x, y: t.y, baseY: t.y,
+    w: TW, h: TH,
+    vx: t.speed, minX: t.minX, maxX: t.maxX,
+    facing: 1,
+    bobPhase: Math.random() * Math.PI * 2,
+    dying: false, deathTimer: 0, deathVy: 0
+  }));
+  goal = { x: L.goal.x, y: L.goal.y - 50, w: 32, h: 50 };
+  gameState = 'playing';
+  deathTimer = 0;
+  graceTimer = GRACE_PERIOD_MS;
+  floatingTexts = [];
+  hideOverlay();
+  updateHUD();
+  if (actx && actx.state === 'suspended') actx.resume();
 }
 
-const emojisExplosao = ['🎈','❤️','💕','💖','💗','💝','🌸','✨','🌟','🎉','🥳','🎀','💐','🌹','💫','🎊','💓','💞','🎁','🎂','💥','🔥'];
-const tempoPorFoto = 3800;
-
-// ====================================================
-// 🎵 MÚSICA — "Aos Olhos do Pai" (Diante do Trono)
-// ====================================================
-const btnMusica = document.getElementById('btnMusica');
-const musicaFundo = document.getElementById('musicaFundo');
-
-// Função para atualizar visual do botão
-function atualizarBotaoMusica(tocando) {
-  if (tocando) {
-    btnMusica.textContent = '🔊';
-    btnMusica.classList.remove('off');
-    btnMusica.classList.add('on');
-    btnMusica.setAttribute('aria-label', 'Desligar música');
-    btnMusica.setAttribute('title', 'Desligar música');
-  } else {
-    btnMusica.textContent = '🔇';
-    btnMusica.classList.remove('on');
-    btnMusica.classList.add('off');
-    btnMusica.setAttribute('aria-label', 'Ligar música');
-    btnMusica.setAttribute('title', 'Ligar música');
-  }
+function updateHUD() {
+  levelNumEl.textContent = levelIndex + 1;
+  coinCountEl.textContent = totalCoins;
 }
 
-// Clique no botão liga/desliga
-btnMusica.addEventListener('click', () => {
-  if (musicaFundo.paused) {
-    musicaFundo.play().then(() => atualizarBotaoMusica(true))
-      .catch(err => console.warn('Não foi possível tocar a música:', err));
-  } else {
-    musicaFundo.pause();
-    atualizarBotaoMusica(false);
-  }
-});
-
-// Sincroniza o botão caso o estado do áudio mude por outro motivo
-musicaFundo.addEventListener('play',  () => atualizarBotaoMusica(true));
-musicaFundo.addEventListener('pause', () => atualizarBotaoMusica(false));
-
-// Estado inicial: desligado
-atualizarBotaoMusica(false);
-// ====================================================
-// 🖼️ CARROSSEL (com fotos E vídeos)
-// ====================================================
-let indiceAtual = 0;
-let temporizador = null;
-let estaPausado = false;
-
-const tela = document.getElementById('telaCarrossel');
-const pontosContainer = document.getElementById('pontos');
-const impactoEl = document.getElementById('impacto');
-const carrossel = document.querySelector('.carrossel');
-
-listaMidia.forEach((midia, i) => {
-  const caixa = document.createElement('div');
-  caixa.className = 'carrossel-foto' + (i === 0 ? ' ativa' : '');
-  caixa.id = `foto-${i}`;
-
-  if (midia.tipo === 'foto') {
-    const ph = criarPlaceholder(midia.legenda);
-    caixa.innerHTML = `
-      <img src="${midia.arquivo}" alt="${midia.legenda}" loading="lazy"
-           onerror="this.onerror=null; this.src='${ph}'">
-      <div class="explosao" id="exp-${i}"></div>
-    `;
-  } else {
-    caixa.innerHTML = `
-      <video src="${midia.arquivo}" 
-             muted 
-             playsinline 
-             preload="metadata"
-             onerror="this.style.display='none'">
-      </video>
-      <button class="som-video" data-video="video-${i}" aria-label="Ativar som">
-        🔇 Toque para ouvir
-      </button>
-      <div class="explosao" id="exp-${i}"></div>
-    `;
-    // Marcar o vídeo com id
-    caixa.querySelector('video').id = `video-${i}`;
-  }
-
-  tela.appendChild(caixa);
-
-  const p = document.createElement('span');
-  p.className = 'ponto' + (i === 0 ? ' ativo' : '') + (midia.tipo === 'video' ? ' video' : '');
-  p.onclick = () => irParaFoto(i);
-  pontosContainer.appendChild(p);
-});
-
-// Botão de som dos vídeos
-tela.addEventListener('click', (e) => {
-  const btn = e.target.closest('.som-video');
-  if (!btn) return;
-  const vid = document.getElementById(btn.dataset.video);
-  if (!vid) return;
-  vid.muted = !vid.muted;
-  if (vid.muted) {
-    btn.classList.remove('tocando');
-    btn.innerHTML = '🔇 Toque para ouvir';
-  } else {
-    btn.classList.add('tocando');
-    btn.innerHTML = '🔊 Som ativado';
-    vid.play().catch(() => {});
-  }
-});
-
-function fazerExplosao(i) {
-  const c = document.getElementById(`exp-${i}`);
-  if (!c) return;
-  c.innerHTML = '';
-  for (let k = 0; k < 30; k++) {
-    const p = document.createElement('span');
-    p.className = 'particula';
-    p.textContent = emojisExplosao[Math.floor(Math.random() * emojisExplosao.length)];
-    const ang = (Math.PI * 2 / 30) * k;
-    const dist = 100 + Math.random() * 130;
-    p.style.setProperty('--tx', Math.cos(ang) * dist + 'px');
-    p.style.setProperty('--ty', Math.sin(ang) * dist + 'px');
-    p.style.animationDelay = (Math.random() * 0.35) + 's';
-    p.addEventListener('animationend', () => p.remove(), { once: true });
-    c.appendChild(p);
-  }
+function aabb(a, b) {
+  return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
 }
 
-function mostrarImpacto() {
-  impactoEl.style.animation = 'none';
-  void impactoEl.offsetHeight;
-  impactoEl.style.animation = 'impacto 0.8s ease-out forwards';
-}
+function update() {
+  updateFloatingTexts();
 
-function pararTodosVideos() {
-  document.querySelectorAll('#telaCarrossel video').forEach(v => {
-    try { v.pause(); v.currentTime = 0; v.onended = null; } catch (e) {}
-  });
-}
-
-function irParaFoto(nova) {
-  if (nova === indiceAtual) return;
-
-  // Pausa vídeo atual
-  pararTodosVideos();
-
-  const atual = document.getElementById(`foto-${indiceAtual}`);
-  const pontoAtual = pontosContainer.children[indiceAtual];
-  atual.classList.remove('ativa');
-  atual.classList.add('saindo');
-  pontoAtual.classList.remove('ativo');
-
-  indiceAtual = nova;
-
-  const novaFoto = document.getElementById(`foto-${indiceAtual}`);
-  const novoPonto = pontosContainer.children[indiceAtual];
-  novaFoto.classList.remove('saindo');
-  novaFoto.classList.add('ativa');
-  novoPonto.classList.add('ativo');
-
-  mostrarImpacto();
-  fazerExplosao(indiceAtual);
-
-  // Se é vídeo, toca e espera terminar; senão, agenda próxima foto
-  const midiaAtual = listaMidia[indiceAtual];
-  if (midiaAtual.tipo === 'video') {
-    clearInterval(temporizador);
-    const vid = novaFoto.querySelector('video');
-    if (vid) {
-      vid.play().catch(() => {
-        // Se autoplay falhar, tenta avançar depois de 5s
-        temporizador = setTimeout(proxima, 5000);
-      });
-      vid.onended = () => proxima();
-      // Segurança: se o vídeo travar, avança depois de 60s no máximo
-      setTimeout(() => {
-        if (indiceAtual === nova && vid.paused === false) return;
-      }, 60000);
+  if (gameState === 'dying') {
+    deathTimer += STEP;
+    player.vy += GRAVITY * 0.8;
+    player.y += player.vy;
+    if (deathTimer > 1400) {
+      if (RESTART_FROM_LEVEL_1) {
+        totalCoins = 0;
+        loadLevel(0);
+      } else {
+        totalCoins = levelCoinsStart;
+        loadLevel(levelIndex);
+      }
     }
-  } else {
-    iniciarAuto();
+    return;
+  }
+
+  if (gameState !== 'playing') return;
+
+  if (graceTimer > 0) {
+    graceTimer -= STEP;
+    if (graceTimer < 0) graceTimer = 0;
+  }
+
+  let dir = 0;
+  if (keys.left) dir -= 1;
+  if (keys.right) dir += 1;
+  player.vx = dir * SPEED;
+  if (dir !== 0) player.facing = dir;
+
+  player.x += player.vx;
+  for (const p of platforms) {
+    if (aabb(player, p)) {
+      if (player.vx > 0) player.x = p.x - player.w;
+      else if (player.vx < 0) player.x = p.x + p.w;
+    }
+  }
+  if (player.x < 0) player.x = 0;
+  if (player.x + player.w > W) player.x = W - player.w;
+
+  player.vy += GRAVITY;
+  if (player.vy > MAX_FALL) player.vy = MAX_FALL;
+  player.y += player.vy;
+  player.onGround = false;
+  for (const p of platforms) {
+    if (aabb(player, p)) {
+      if (player.vy > 0) {
+        player.y = p.y - player.h;
+        player.vy = 0;
+        player.onGround = true;
+      } else if (player.vy < 0) {
+        player.y = p.y + p.h;
+        player.vy = 0;
+      }
+    }
+  }
+
+  if (player.y > H + 60) {
+    beep(200, 0.15, 'sawtooth', 0.05);
+    player.x = LEVELS[levelIndex].start.x;
+    player.y = LEVELS[levelIndex].start.y;
+    player.vx = 0; player.vy = 0;
+    showDeathToast('💧 Caiu! Cuidado com os buracos!');
+    return;
+  }
+
+  updateTurtles();
+
+  if (gameState !== 'playing') return;
+
+  for (const c of coins) {
+    if (c.collected) continue;
+    const cr = { x: c.x - 8, y: c.y - 8, w: 16, h: 16 };
+    if (aabb(player, cr)) {
+      c.collected = true;
+      totalCoins++;
+      updateHUD();
+      beep(1200 + Math.random() * 200, 0.08, 'sine', 0.05);
+    }
+  }
+
+  if (aabb(player, goal)) levelComplete();
+}
+
+function updateTurtles() {
+  const inGrace = graceTimer > 0;
+
+  for (let i = turtles.length - 1; i >= 0; i--) {
+    const t = turtles[i];
+
+    if (t.dying) {
+      t.deathTimer++;
+      t.deathVy += GRAVITY * 0.7;
+      t.y += t.deathVy;
+      if (t.deathTimer > 70 || t.y > H + 60) {
+        turtles.splice(i, 1);
+      }
+      continue;
+    }
+
+    if (inGrace) {
+      if (t.flying) {
+        t.bobPhase += 0.06;
+        t.y = t.baseY + Math.sin(t.bobPhase) * 8;
+      }
+      continue;
+    }
+
+    if (t.flying) {
+      t.bobPhase += 0.06;
+      t.y = t.baseY + Math.sin(t.bobPhase) * 8;
+    }
+
+    t.x += t.vx;
+    if (t.x <= t.minX) { t.x = t.minX; t.vx = Math.abs(t.vx); }
+    if (t.x >= t.maxX) { t.x = t.maxX; t.vx = -Math.abs(t.vx); }
+    t.facing = t.vx > 0 ? 1 : -1;
+
+    if (aabb(player, t)) {
+      const prevBottom = player.y + player.h - player.vy;
+      const turtleMidY = t.y + t.h * 0.5;
+      const isStomp = player.vy > 0 && prevBottom <= turtleMidY + 4;
+
+      if (isStomp) {
+        killTurtle(t);
+      } else {
+        playerHitTurtle();
+        return;
+      }
+    }
   }
 }
 
-function proxima() { irParaFoto((indiceAtual + 1) % listaMidia.length); }
-function anterior() { irParaFoto((indiceAtual - 1 + listaMidia.length) % listaMidia.length); }
+function killTurtle(t) {
+  t.dying = true;
+  t.deathTimer = 0;
+  t.deathVy = -5.5;
 
-function iniciarAuto() {
-  clearInterval(temporizador);
-  if (estaPausado) return;
-  // Se o item atual é vídeo, não usa timer (deixa o vídeo controlar)
-  if (listaMidia[indiceAtual].tipo === 'video') return;
-  temporizador = setInterval(proxima, tempoPorFoto);
+  const reward = t.flying ? 10 : 5;
+  totalCoins += reward;
+  updateHUD();
+
+  floatingTexts.push({
+    x: t.x + t.w / 2,
+    y: t.y - 6,
+    text: '+' + reward,
+    icon: '🪙',
+    timer: 70,
+    maxTimer: 70
+  });
+
+  player.vy = -9;
+  player.onGround = false;
+
+  beep(620, 0.06, 'square', 0.09);
+  setTimeout(() => beep(880, 0.09, 'square', 0.1), 50);
+  setTimeout(() => beep(1200, 0.12, 'sine', 0.1), 150);
 }
 
-document.getElementById('btnEsq').onclick = anterior;
-document.getElementById('btnDir').onclick = proxima;
+function updateFloatingTexts() {
+  for (let i = floatingTexts.length - 1; i >= 0; i--) {
+    const ft = floatingTexts[i];
+    ft.timer--;
+    ft.y -= 0.9;
+    if (ft.timer <= 0) floatingTexts.splice(i, 1);
+  }
+}
+
+function playerHitTurtle() {
+  gameState = 'dying';
+  deathTimer = 0;
+  player.vy = -13;
+  player.vx = 0;
+  beep(500, 0.1, 'square', 0.09);
+  setTimeout(() => beep(380, 0.12, 'square', 0.09), 120);
+  setTimeout(() => beep(260, 0.15, 'square', 0.09), 260);
+  setTimeout(() => beep(160, 0.35, 'square', 0.09), 420);
+  showDeathToast('🐢 A tartaruga te pegou! Tenta de novo!');
+}
+
+function showDeathToast(msg) {
+  toast.textContent = msg;
+  toast.classList.add('show', 'death');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => {
+    toast.classList.remove('show', 'death');
+  }, 2200);
+}
+
+function drawCloud(x, y, s) {
+  ctx.fillStyle = 'rgba(255,255,255,0.85)';
+  ctx.beginPath();
+  ctx.arc(x, y, 12 * s, 0, Math.PI * 2);
+  ctx.arc(x + 15 * s, y + 3 * s, 10 * s, 0, Math.PI * 2);
+  ctx.arc(x - 15 * s, y + 3 * s, 10 * s, 0, Math.PI * 2);
+  ctx.arc(x + 6 * s, y - 6 * s, 9 * s, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+function roundRect(x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+
+function draw() {
+  const sky = ctx.createLinearGradient(0, 0, 0, H);
+  sky.addColorStop(0, '#87ceeb');
+  sky.addColorStop(1, '#e0f6ff');
+  ctx.fillStyle = sky;
+  ctx.fillRect(0, 0, W, H);
+
+  drawCloud(80, 60, 1);
+  drawCloud(320, 90, 1.2);
+  drawCloud(180, 40, 0.7);
+
+  for (const p of platforms) {
+    const grad = ctx.createLinearGradient(0, p.y, 0, p.y + p.h);
+    grad.addColorStop(0, '#7a8b99');
+    grad.addColorStop(0.5, '#5a6b79');
+    grad.addColorStop(1, '#3a4b59');
+    ctx.fillStyle = grad;
+    ctx.fillRect(p.x, p.y, p.w, p.h);
+    ctx.fillStyle = '#9aabba';
+    ctx.fillRect(p.x, p.y, p.w, 2);
+    ctx.fillStyle = '#2a3b49';
+    for (let x = p.x + 8; x < p.x + p.w - 4; x += 24) {
+      ctx.beginPath();
+      ctx.arc(x, p.y + p.h / 2, 2, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  const t = Date.now() / 200;
+  for (const c of coins) {
+    if (c.collected) continue;
+    const bob = Math.sin(t + c.x) * 2;
+    const y = c.y + bob;
+    const grad = ctx.createRadialGradient(c.x, y, 1, c.x, y, 14);
+    grad.addColorStop(0, 'rgba(255,215,0,0.55)');
+    grad.addColorStop(1, 'rgba(255,215,0,0)');
+    ctx.fillStyle = grad;
+    ctx.beginPath(); ctx.arc(c.x, y, 14, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#ffd700';
+    ctx.beginPath(); ctx.arc(c.x, y, 8, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#ffeb3b';
+    ctx.beginPath(); ctx.arc(c.x, y, 5, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,0.8)';
+    ctx.beginPath(); ctx.arc(c.x - 2, y - 2, 2, 0, Math.PI * 2); ctx.fill();
+  }
+
+  if (goal) {
+    ctx.fillStyle = '#555';
+    ctx.fillRect(goal.x + goal.w/2 - 2, goal.y, 4, goal.h);
+    const wave = Math.sin(Date.now() / 300) * 4;
+    ctx.fillStyle = '#e91e63';
+    ctx.beginPath();
+    ctx.moveTo(goal.x + goal.w/2 + 2, goal.y + 4);
+    ctx.lineTo(goal.x + goal.w/2 + 30 + wave, goal.y + 14);
+    ctx.lineTo(goal.x + goal.w/2 + 2, goal.y + 24);
+    ctx.closePath();
+    ctx.fill();
+    ctx.font = '14px serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('⭐', goal.x + goal.w/2 + 12, goal.y + 20);
+  }
+
+  for (const tt of turtles) drawTurtle(tt);
+
+  if (player) drawRobot();
+
+  drawFloatingTexts();
+
+  if (graceTimer > 0 && gameState === 'playing') {
+    drawGraceIndicator();
+  }
+}
+
+function drawGraceIndicator() {
+  const seconds = Math.ceil(graceTimer / 1000);
+  const alpha = Math.min(1, graceTimer / 400);
+
+  ctx.globalAlpha = alpha * 0.85;
+
+  const boxW = 220, boxH = 65;
+  const boxX = (W - boxW) / 2;
+  const boxY = 70;
+  
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+  roundRect(boxX, boxY, boxW, boxH, 14);
+  ctx.fill();
+  ctx.strokeStyle = '#e91e63';
+  ctx.lineWidth = 3;
+  roundRect(boxX, boxY, boxW, boxH, 14);
+  ctx.stroke();
+
+  ctx.fillStyle = '#c2185b';
+  ctx.font = 'bold 20px "Segoe UI", sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('🐢 Prepare-se!', W / 2, boxY + 22);
+
+  ctx.font = 'bold 28px "Segoe UI", sans-serif';
+  ctx.fillStyle = '#e91e63';
+  ctx.fillText(seconds, W / 2, boxY + 48);
+
+  ctx.globalAlpha = 1;
+  ctx.textBaseline = 'alphabetic';
+}
+
+function drawTurtle(t) {
+  if (t.dying) {
+    const progress = Math.min(1, t.deathTimer / 70);
+    ctx.save();
+    ctx.globalAlpha = 1 - progress * 0.6;
+    ctx.translate(t.x + t.w / 2, t.y + t.h / 2);
+    ctx.rotate(progress * Math.PI * 2);
+    ctx.translate(-(t.x + t.w / 2), -(t.y + t.h / 2));
+    drawTurtleBody(t);
+    ctx.restore();
+    return;
+  }
+  drawTurtleBody(t);
+}
+
+function drawTurtleBody(t) {
+  const {x, y, w, h, facing} = t;
+  const dir = facing;
+  const walk = Math.sin(Date.now() / 100) * 1.5;
+
+  if (t.flying) {
+    const flap = Math.sin(Date.now() / 80) * 0.5;
+    ctx.save();
+    ctx.translate(x + 4, y + h / 2);
+    ctx.rotate(-0.4 + flap);
+    ctx.fillStyle = 'rgba(220, 240, 255, 0.95)';
+    ctx.strokeStyle = 'rgba(130, 180, 220, 0.9)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.ellipse(-8, 0, 10, 5, 0, 0, Math.PI * 2);
+    ctx.fill(); ctx.stroke();
+    ctx.restore();
+    ctx.save();
+    ctx.translate(x + w - 4, y + h / 2);
+    ctx.rotate(0.4 - flap);
+    ctx.fillStyle = 'rgba(220, 240, 255, 0.95)';
+    ctx.strokeStyle = 'rgba(130, 180, 220, 0.9)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.ellipse(8, 0, 10, 5, 0, 0, Math.PI * 2);
+    ctx.fill(); ctx.stroke();
+    ctx.restore();
+  }
+
+  ctx.fillStyle = 'rgba(0,0,0,0.15)';
+  ctx.beginPath();
+  ctx.ellipse(x + w/2, y + h + 1, w/2, 2.5, 0, 0, Math.PI*2);
+  ctx.fill();
+
+  if (!t.flying) {
+    ctx.fillStyle = '#f9a825';
+    ctx.beginPath();
+    ctx.ellipse(x + 5 + walk * dir, y + h - 3, 4, 3, 0, 0, Math.PI*2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(x + w - 5 - walk * dir, y + h - 3, 4, 3, 0, 0, Math.PI*2);
+    ctx.fill();
+  } else {
+    ctx.fillStyle = '#f9a825';
+    ctx.beginPath();
+    ctx.ellipse(x + 7, y + h - 2, 3.5, 2.5, 0, 0, Math.PI*2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(x + w - 7, y + h - 2, 3.5, 2.5, 0, 0, Math.PI*2);
+    ctx.fill();
+  }
+
+  const headX = dir > 0 ? x + w - 3 : x + 3;
+  const headY = y + 6;
+  ctx.fillStyle = '#f9d27a';
+  ctx.beginPath();
+  ctx.ellipse(headX, headY + 2, 5, 4, 0, 0, Math.PI*2);
+  ctx.fill();
+  ctx.fillStyle = '#ffeb99';
+  ctx.beginPath();
+  ctx.arc(headX, headY, 7, 0, Math.PI*2);
+  ctx.fill();
+  ctx.fillStyle = '#fff';
+  ctx.beginPath();
+  ctx.arc(headX + dir * 1, headY - 2, 2.6, 0, Math.PI*2);
+  ctx.arc(headX + dir * 4.5, headY - 2, 2.6, 0, Math.PI*2);
+  ctx.fill();
+  ctx.fillStyle = '#222';
+  ctx.beginPath();
+  ctx.arc(headX + dir * 1.8, headY - 2, 1.3, 0, Math.PI*2);
+  ctx.arc(headX + dir * 5.2, headY - 2, 1.3, 0, Math.PI*2);
+  ctx.fill();
+  ctx.strokeStyle = '#8b4513';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.arc(headX + dir * 2.5, headY + 3.5, 2, 0.2, Math.PI - 0.2);
+  ctx.stroke();
+
+  const shellColor = t.flying ? '#7e57c2' : '#4caf50';
+  const shellDark = t.flying ? '#4527a0' : '#2e7d32';
+  const shellEdge = t.flying ? '#311b92' : '#1b5e20';
+
+  ctx.fillStyle = shellColor;
+  roundRect(x + 2, y + 4, w - 4, h - 8, 9);
+  ctx.fill();
+  ctx.strokeStyle = shellDark;
+  ctx.lineWidth = 1.5;
+  roundRect(x + 2, y + 4, w - 4, h - 8, 9);
+  ctx.stroke();
+
+  ctx.strokeStyle = shellEdge;
+  ctx.lineWidth = 1.2;
+  ctx.beginPath();
+  ctx.arc(x + w/2, y + h/2, 5, 0, Math.PI*2);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(x + w/2 - 5, y + h/2);
+  ctx.lineTo(x + 4, y + h/2 - 3);
+  ctx.moveTo(x + w/2 + 5, y + h/2);
+  ctx.lineTo(x + w - 4, y + h/2 - 3);
+  ctx.moveTo(x + w/2 - 5, y + h/2);
+  ctx.lineTo(x + 4, y + h/2 + 3);
+  ctx.moveTo(x + w/2 + 5, y + h/2);
+  ctx.lineTo(x + w - 4, y + h/2 + 3);
+  ctx.stroke();
+
+  ctx.fillStyle = 'rgba(255,255,255,0.35)';
+  ctx.beginPath();
+  ctx.ellipse(x + w/2 - 3, y + 8, 5, 2.5, -0.4, 0, Math.PI*2);
+  ctx.fill();
+
+  if (t.flying) {
+    const sparkle = Math.sin(Date.now() / 200);
+    ctx.globalAlpha = 0.5 + sparkle * 0.4;
+    ctx.font = '10px serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('✨', x + w / 2, y - 4);
+    ctx.globalAlpha = 1;
+  }
+}
+
+function drawRobot() {
+  const {x, y, w, h, facing} = player;
+  const isDying = gameState === 'dying';
+
+  ctx.fillStyle = 'rgba(0,0,0,0.15)';
+  ctx.beginPath();
+  ctx.ellipse(x + w/2, y + h + 2, w/2, 3, 0, 0, Math.PI*2);
+  ctx.fill();
+
+  if (isDying) {
+    const blink = Math.floor(deathTimer / 100) % 2 === 0;
+    if (!blink) return;
+    ctx.globalAlpha = 0.85;
+  }
+
+  ctx.fillStyle = '#2a3b49';
+  ctx.fillRect(x + 4, y + h - 5, 6, 5);
+  ctx.fillRect(x + w - 10, y + h - 5, 6, 5);
+
+  const bodyGrad = ctx.createLinearGradient(0, y + 8, 0, y + h);
+  bodyGrad.addColorStop(0, isDying ? '#ff8a80' : '#4fc3f7');
+  bodyGrad.addColorStop(1, isDying ? '#c62828' : '#0288d1');
+  ctx.fillStyle = bodyGrad;
+  roundRect(x + 2, y + 8, w - 4, h - 12, 4);
+  ctx.fill();
+
+  ctx.fillStyle = isDying ? '#ff5252' : '#ffeb3b';
+  ctx.beginPath(); ctx.arc(x + w/2, y + h/2 + 2, 3, 0, Math.PI*2); ctx.fill();
+
+  const headGrad = ctx.createLinearGradient(0, y, 0, y + 12);
+  headGrad.addColorStop(0, isDying ? '#ffab91' : '#b0e0ff');
+  headGrad.addColorStop(1, isDying ? '#ff8a80' : '#4fc3f7');
+  ctx.fillStyle = headGrad;
+  roundRect(x + 3, y, w - 6, 12, 3);
+  ctx.fill();
+
+  const eyeY = y + 5;
+  const e1 = x + w/2 - 5 + facing;
+  const e2 = x + w/2 + 3 + facing;
+  ctx.fillStyle = '#fff';
+  ctx.beginPath();
+  if (isDying) {
+    ctx.arc(e1, eyeY, 3, 0, Math.PI*2);
+    ctx.arc(e2, eyeY, 3, 0, Math.PI*2);
+  } else {
+    ctx.arc(e1, eyeY, 2.5, 0, Math.PI*2);
+    ctx.arc(e2, eyeY, 2.5, 0, Math.PI*2);
+  }
+  ctx.fill();
+  ctx.fillStyle = '#222';
+  ctx.beginPath();
+  ctx.arc(e1 + facing, eyeY, isDying ? 1.5 : 1.3, 0, Math.PI*2);
+  ctx.arc(e2 + facing, eyeY, isDying ? 1.5 : 1.3, 0, Math.PI*2);
+  ctx.fill();
+
+  ctx.strokeStyle = '#555';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(x + w/2, y);
+  ctx.lineTo(x + w/2, y - 6);
+  ctx.stroke();
+  const glow = Math.sin(Date.now() / 300) * 0.5 + 0.5;
+  ctx.fillStyle = isDying ? '#ff1744' : `rgba(255,80,80,${0.5 + glow * 0.5})`;
+  ctx.beginPath(); ctx.arc(x + w/2, y - 7, 2.5, 0, Math.PI*2); ctx.fill();
+
+  ctx.globalAlpha = 1;
+}
+
+function drawFloatingTexts() {
+  for (const ft of floatingTexts) {
+    const alpha = Math.min(1, ft.timer / 25);
+    ctx.globalAlpha = alpha;
+    ctx.font = 'bold 18px "Segoe UI", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.strokeStyle = 'white';
+    ctx.lineWidth = 4;
+    ctx.strokeText(ft.text + ' ' + ft.icon, ft.x, ft.y);
+    ctx.fillStyle = '#ff9800';
+    ctx.fillText(ft.text + ' ' + ft.icon, ft.x, ft.y);
+    ctx.globalAlpha = 1;
+  }
+}
+
+function loop(ts) {
+  requestAnimationFrame(loop);
+  if (!lastTime) lastTime = ts;
+  let dt = ts - lastTime;
+  if (dt > 100) dt = 100;
+  lastTime = ts;
+  accumulator += dt;
+  while (accumulator >= STEP) {
+    update();
+    accumulator -= STEP;
+  }
+  draw();
+}
+
+function levelComplete() {
+  gameState = 'levelComplete';
+  [523, 659, 784].forEach((f, i) => setTimeout(() => beep(f, 0.12, 'triangle', 0.08), i * 100));
+  showPhotoReward();
+}
+
+function showPhotoReward() {
+  const photo = getPhotoForLevel(levelIndex);
+  const isLast = levelIndex === LEVELS.length - 1;
+  const isFromFolder = folderPhotosValid[levelIndex];
+  const phaseCoins = totalCoins - levelCoinsStart;
+
+  let photoHTML;
+  if (photo) {
+    photoHTML = `
+      <div class="photo-reward"><img src="${photo}" alt="Foto ${levelIndex+1}"></div>
+      <p class="reward-msg">🎁 Surpresa desbloqueada! ${isFromFolder ? '📁' : '📤'}</p>`;
+  } else {
+    photoHTML = `
+      <div class="photo-reward empty">
+        <div style="font-size:2em;">📷</div>
+        <div style="margin-top:4px;">Adicione a foto ${levelIndex+1}<br>na pasta <code>fotos/</code></div>
+      </div>`;
+  }
+
+  const btnText = isLast ? '🏆 Ver Prêmio Final' : '▶️ Próxima Fase';
+
+  showOverlay(`
+    <span class="big-emoji">🎉</span>
+    <h2>Fase ${levelIndex+1} de ${LEVELS.length} completa!</h2>
+    ${photoHTML}
+    <div class="coins-phase">
+      🪙 +${phaseCoins} nesta fase &nbsp;•&nbsp; Total: <b>${totalCoins}</b>
+    </div>
+    <button class="btn" onclick="nextAction()">${btnText}</button>
+  `);
+}
+
+function finalWin() {
+  gameState = 'won';
+  [523, 659, 784, 1047, 1319].forEach((f, i) => setTimeout(() => beep(f, 0.2, 'triangle', 0.09), i * 120));
+  showOverlay(`
+    <span class="big-emoji">🏆</span>
+    <h2>VOCÊ VENCEU TUDO!</h2>
+    <p>Passou as <b>10 fases</b> fugindo das tartarugas<br>e desbloqueou todas as fotos! 💖🐢</p>
+    <div class="total-coins-display">
+      <div style="font-size:0.85em;color:#666;margin-bottom:4px;">Suas moedas acumuladas:</div>
+      <div style="font-size:2.2em;font-weight:900;color:#e65100;line-height:1;">🪙 ${totalCoins}</div>
+    </div>
+    <div class="prize-box">
+      🎁 Prêmio especial:<br>
+      <small>Um abraço bem apertado + o passeio que você escolher! 💕</small>
+    </div>
+    <button class="btn" onclick="nextAction()">🔁 Jogar de novo</button>
+  `);
+  launchConfetti();
+}
+
+function launchConfetti() {
+  const colors = ['#e91e63','#f06292','#ba68c8','#ffd54f','#4dd0e1','#81c784','#ff8a65'];
+  for (let i = 0; i < 50; i++) {
+    const d = document.createElement('div');
+    d.className = 'confetti';
+    d.style.left = Math.random() * 100 + '%';
+    d.style.background = colors[Math.floor(Math.random() * colors.length)];
+    d.style.width = (5 + Math.random() * 7) + 'px';
+    d.style.height = (8 + Math.random() * 10) + 'px';
+    d.style.animationDelay = (Math.random() * 1.5) + 's';
+    d.style.animationDuration = (1.8 + Math.random() * 1.5) + 's';
+    overlayContent.appendChild(d);
+  }
+}
+
+function nextAction() {
+  if (gameState === 'levelComplete') {
+    if (levelIndex < LEVELS.length - 1) loadLevel(levelIndex + 1);
+    else finalWin();
+  } else if (gameState === 'won' || gameState === 'ready') {
+    totalCoins = 0;
+    loadLevel(0);
+  }
+}
+
+function restartLevel() {
+  if (gameState === 'playing' || gameState === 'dying' || gameState === 'levelComplete') {
+    totalCoins = levelCoinsStart;
+    loadLevel(levelIndex);
+  }
+}
+
+function showOverlay(html) {
+  overlayContent.innerHTML = html;
+  overlay.classList.add('show');
+}
+function hideOverlay() {
+  overlay.classList.remove('show');
+  overlayContent.innerHTML = '';
+}
+
+function showStart() {
+  gameState = 'ready';
+  showOverlay(`
+    <span class="big-emoji">🤖💖</span>
+    <h2>Ajude o Robô!</h2>
+    <p>Passe as <b>10 fases</b> e ganhe moedas 🪙<br>pulando nas tartarugas! 🐢</p>
+    <div class="hint-controls">
+      ← → andar &nbsp;•&nbsp; ESPAÇO / ⬆ pular<br>
+      🐢 <b>Pule em cima</b> → mata + ganha moeda<br>
+      🐢 Encostar de lado → morre!<br>
+      🛡️ <b>1,5s de preparo</b> no início de cada fase
+    </div>
+    <button class="btn" onclick="startGame()">▶️ Começar</button>
+  `);
+}
+
+function startGame() {
+  totalCoins = 0;
+  loadLevel(0);
+}
 
 document.addEventListener('keydown', e => {
-  if (e.key === 'ArrowLeft') anterior();
-  if (e.key === 'ArrowRight') proxima();
+  if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') { keys.left = true; e.preventDefault(); }
+  if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') { keys.right = true; e.preventDefault(); }
+  if (e.key === 'ArrowUp' || e.key === ' ' || e.key === 'w' || e.key === 'W') { doJump(); e.preventDefault(); }
+  if (e.key === 'Enter' && gameState !== 'playing' && gameState !== 'dying') {
+    const btn = overlayContent.querySelector('.btn');
+    if (btn) btn.click();
+  }
 });
 
-let touchX = 0;
-tela.addEventListener('touchstart', e => { touchX = e.touches[0].clientX; }, { passive: true });
-tela.addEventListener('touchend', e => {
-  const dx = e.changedTouches[0].clientX - touchX;
-  if (Math.abs(dx) > 50) dx < 0 ? proxima() : anterior();
+document.addEventListener('keyup', e => {
+  if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') keys.left = false;
+  if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') keys.right = false;
+});
+
+function doJump() {
+  if (gameState !== 'playing') return;
+  if (player.onGround) {
+    player.vy = JUMP;
+    player.onGround = false;
+    beep(620, 0.09, 'sine', 0.05);
+  }
+}
+
+function bindHold(btnId, key) {
+  const btn = document.getElementById(btnId);
+  const on = e => { e.preventDefault(); keys[key] = true; btn.classList.add('pressed'); };
+  const off = () => { keys[key] = false; btn.classList.remove('pressed'); };
+  btn.addEventListener('pointerdown', on);
+  btn.addEventListener('pointerup', off);
+  btn.addEventListener('pointerleave', off);
+  btn.addEventListener('pointercancel', off);
+}
+bindHold('btnLeft', 'left');
+bindHold('btnRight', 'right');
+document.getElementById('btnJump').addEventListener('pointerdown', e => {
+  e.preventDefault();
+  doJump();
+});
+
+let tStart = null;
+canvas.addEventListener('touchstart', e => {
+  const t = e.changedTouches[0];
+  tStart = { x: t.clientX, y: t.clientY };
+}, { passive: true });
+canvas.addEventListener('touchend', e => {
+  if (!tStart) return;
+  const t = e.changedTouches[0];
+  const dy = t.clientY - tStart.y;
+  if (dy < -25) doJump();
+  tStart = null;
 }, { passive: true });
 
-carrossel.addEventListener('mouseenter', () => {
-  estaPausado = true;
-  clearInterval(temporizador);
-});
-carrossel.addEventListener('mouseleave', () => {
-  estaPausado = false;
-  iniciarAuto();
-});
+photoInput.addEventListener('change', e => {
+  const files = Array.from(e.target.files);
+  if (!files.length) return;
 
-document.addEventListener('visibilitychange', () => {
-  if (document.hidden) {
-    clearInterval(temporizador);
-    pararTodosVideos();
-  } else {
-    iniciarAuto();
-  }
-});
+  let loaded = 0;
+  const total = files.length;
 
-fazerExplosao(0);
-mostrarImpacto();
+  files.forEach(file => {
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const img = new Image();
+      img.onload = () => {
+        const c = document.createElement('canvas');
+        const maxW = 700;
+        let w = img.width, h = img.height;
+        if (w > maxW) { h = h * maxW / w; w = maxW; }
+        c.width = w; c.height = h;
+        c.getContext('2d').drawImage(img, 0, 0, w, h);
+        const dataURL = c.toDataURL('image/jpeg', 0.65);
 
-// Se o primeiro item for vídeo, toca; senão, agenda normalmente
-if (listaMidia[0].tipo === 'video') {
-  const v = document.querySelector('#foto-0 video');
-  if (v) { v.play().catch(() => {}); v.onended = () => proxima(); }
-} else {
-  iniciarAuto();
-}
+        if (localPhotos.length < 10) localPhotos.push(dataURL);
 
-// Fundo flutuante
-const fundo = document.getElementById('fundoFestas');
-const emojisFundo = ['🎈','❤️','💕','💖','✨','🌸','🌹','💫','🎊'];
-function criarFlutuante() {
-  const el = document.createElement('span');
-  el.className = 'flutuante';
-  el.textContent = emojisFundo[Math.floor(Math.random() * emojisFundo.length)];
-  el.style.left = Math.random() * 100 + '%';
-  el.style.setProperty('--dur', (4 + Math.random() * 5) + 's');
-  el.style.fontSize = (18 + Math.random() * 22) + 'px';
-  el.addEventListener('animationend', () => el.remove(), { once: true });
-  fundo.appendChild(el);
-}
-setInterval(criarFlutuante, 300);
-
-// ====================================================
-// 🎮 LÓGICA DO JOGO
-// ====================================================
-const overlay         = document.getElementById('jogoOverlay');
-const telaSenha       = document.getElementById('telaSenha');
-const senhaInput      = document.getElementById('senhaInput');
-const senhaErro       = document.getElementById('senhaErro');
-const btnValidarSenha = document.getElementById('btnValidarSenha');
-const jogoFase        = document.getElementById('jogoFase');
-const faseSurpresa    = document.getElementById('faseSurpresa');
-const progressoBarra  = document.getElementById('progressoBarra');
-const numPerguntaEl   = document.getElementById('numPergunta');
-const totalPerguntasEl= document.getElementById('totalPerguntas');
-const perguntaTextoEl = document.getElementById('perguntaTexto');
-const opcoesEl        = document.getElementById('opcoes');
-const fraseReveladaEl = document.getElementById('fraseRevelada');
-const tentativasEl    = document.getElementById('tentativasEl');
-const caixaSurpresa   = document.getElementById('caixaSurpresa');
-const dicaCaixa       = document.getElementById('dicaCaixa');
-const giftCard        = document.getElementById('giftCard');
-
-let perguntaAtual = 0;
-let tentativas = 0;
-let bloqueado = false;
-
-document.getElementById('senhaDica').textContent = SENHA_DICA;
-totalPerguntasEl.textContent = perguntas.length;
-document.getElementById('giftValor').textContent = PRESENTE_VALOR;
-document.getElementById('dedication').innerHTML = CARTA_DEDICATORIA;
-
-function normalizarSenha(s) { return s.replace(/\D/g, ''); }
-
-function abrirJogo() {
-  estaPausado = true;
-  clearInterval(temporizador);
-  pararTodosVideos();
-
-  perguntaAtual = 0;
-  tentativas = 0;
-  bloqueado = false;
-  senhaInput.value = '';
-  senhaErro.textContent = '';
-  senhaInput.classList.remove('errada');
-  telaSenha.style.display = 'block';
-  jogoFase.style.display = 'none';
-  faseSurpresa.style.display = 'none';
-  giftCard.classList.remove('visivel');
-  caixaSurpresa.classList.remove('aberta');
-  dicaCaixa.classList.remove('escondida');
-  progressoBarra.style.width = '0%';
-  atualizarTentativas();
-
-  overlay.classList.add('ativo');
-
-  if (!musicaAtiva) {
-    musicaAtiva = true;
-    btnMusica.textContent = '🔊';
-    btnMusica.classList.remove('off');
-    tocarMusica();
-  }
-
-  setTimeout(() => senhaInput.focus(), 400);
-}
-
-function fecharJogo() {
-  overlay.classList.remove('ativo');
-  estaPausado = false;
-  iniciarAuto();
-}
-
-function validarSenha() {
-  const valor = normalizarSenha(senhaInput.value);
-  const correta = normalizarSenha(SENHA);
-  if (valor === correta) {
-    telaSenha.style.display = 'none';
-    jogoFase.style.display = 'block';
-    mostrarPergunta();
-  } else {
-    senhaErro.textContent = 'Ops! Senha incorreta. Tente de novo 💔';
-    senhaInput.classList.add('errada');
-    setTimeout(() => senhaInput.classList.remove('errada'), 600);
-    senhaInput.value = '';
-    senhaInput.focus();
-  }
-}
-
-function mostrarPergunta() {
-  bloqueado = false;
-  const q = perguntas[perguntaAtual];
-  numPerguntaEl.textContent = perguntaAtual + 1;
-  perguntaTextoEl.textContent = q.pergunta;
-  fraseReveladaEl.textContent = '';
-  fraseReveladaEl.classList.remove('mostrar');
-  progressoBarra.style.width = (perguntaAtual / perguntas.length * 100) + '%';
-
-  opcoesEl.innerHTML = '';
-  q.opcoes.forEach((opcao, i) => {
-    const btn = document.createElement('button');
-    btn.className = 'opcao';
-    btn.textContent = opcao;
-    btn.onclick = () => responder(i, btn);
-    opcoesEl.appendChild(btn);
+        loaded++;
+        if (loaded === total) {
+          savePhotos();
+          renderPhotos();
+          showToast(`${localPhotos.length}/10 fotos adicionadas`);
+        }
+      };
+      img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
   });
-}
-
-function atualizarTentativas() {
-  tentativasEl.textContent = `Tentativas: ${tentativas}`;
-}
-
-function responder(index, btnClicado) {
-  if (bloqueado) return;
-  const q = perguntas[perguntaAtual];
-  const botoes = opcoesEl.querySelectorAll('.opcao');
-
-  if (index === q.correta) {
-    bloqueado = true;
-    btnClicado.classList.add('correta');
-    botoes.forEach(b => { b.disabled = true; if (b !== btnClicado) b.classList.add('apagada'); });
-    progressoBarra.style.width = ((perguntaAtual + 1) / perguntas.length * 100) + '%';
-    fraseReveladaEl.textContent = q.frase;
-    fraseReveladaEl.classList.add('mostrar');
-    criarExplosaoBotao(btnClicado);
-
-    setTimeout(() => {
-      perguntaAtual++;
-      if (perguntaAtual < perguntas.length) mostrarPergunta();
-      else mostrarSurpresa();
-    }, 1900);
-  } else {
-    tentativas++;
-    atualizarTentativas();
-    btnClicado.classList.add('errada');
-    setTimeout(() => btnClicado.classList.remove('errada'), 600);
-  }
-}
-
-function criarExplosaoBotao(origem) {
-  const rect = origem.getBoundingClientRect();
-  const cx = rect.left + rect.width / 2;
-  const cy = rect.top + rect.height / 2;
-  const em = ['🎉','✨','🌟','💖','🎈','💫','⭐'];
-  for (let i = 0; i < 14; i++) {
-    const s = document.createElement('span');
-    s.textContent = em[Math.floor(Math.random() * em.length)];
-    s.style.cssText = `position:fixed;left:${cx}px;top:${cy}px;font-size:${18 + Math.random() * 16}px;pointer-events:none;z-index:300`;
-    document.body.appendChild(s);
-    const ang = Math.random() * Math.PI * 2;
-    const dist = 60 + Math.random() * 120;
-    s.animate([
-      { transform: 'translate(-50%,-50%) scale(.2)', opacity: 0 },
-      { transform: `translate(calc(-50% + ${Math.cos(ang) * dist * .4}px), calc(-50% + ${Math.sin(ang) * dist * .4}px)) scale(1.2)`, opacity: 1, offset: .3 },
-      { transform: `translate(calc(-50% + ${Math.cos(ang) * dist}px), calc(-50% + ${Math.sin(ang) * dist}px)) scale(.6)`, opacity: 0 }
-    ], { duration: 900 + Math.random() * 400, easing: 'cubic-bezier(.15,.7,.35,1)', fill: 'forwards' })
-    .onfinish = () => s.remove();
-  }
-}
-
-function mostrarSurpresa() {
-  jogoFase.style.display = 'none';
-  faseSurpresa.style.display = 'block';
-  progressoBarra.style.width = '100%';
-}
-
-caixaSurpresa.addEventListener('click', () => {
-  if (caixaSurpresa.classList.contains('aberta')) return;
-  caixaSurpresa.classList.add('aberta');
-  dicaCaixa.classList.add('escondida');
-
-  const r = caixaSurpresa.getBoundingClientRect();
-  const cx = r.left + r.width / 2;
-  const cy = r.top + r.height / 2;
-  const em = ['🎉','✨','💸','💖','🎈','⭐','💫','🎊'];
-  for (let i = 0; i < 28; i++) {
-    const s = document.createElement('span');
-    s.textContent = em[Math.floor(Math.random() * em.length)];
-    s.style.cssText = `position:fixed;left:${cx}px;top:${cy}px;font-size:${20 + Math.random() * 24}px;pointer-events:none;z-index:300`;
-    document.body.appendChild(s);
-    const ang = Math.random() * Math.PI * 2;
-    const dist = 100 + Math.random() * 200;
-    s.animate([
-      { transform: 'translate(-50%,-50%) scale(.2)', opacity: 0 },
-      { transform: `translate(calc(-50% + ${Math.cos(ang) * dist * .4}px), calc(-50% + ${Math.sin(ang) * dist * .4}px)) scale(1.3)`, opacity: 1, offset: .25 },
-      { transform: `translate(calc(-50% + ${Math.cos(ang) * dist}px), calc(-50% + ${Math.sin(ang) * dist}px)) scale(.7)`, opacity: 0 }
-    ], { duration: 1400 + Math.random() * 800, easing: 'cubic-bezier(.15,.7,.35,1)', fill: 'forwards' })
-    .onfinish = () => s.remove();
-  }
-  setTimeout(() => giftCard.classList.add('visivel'), 650);
+  e.target.value = '';
 });
 
-document.getElementById('btnJogo').addEventListener('click', abrirJogo);
-btnValidarSenha.addEventListener('click', validarSenha);
-senhaInput.addEventListener('keypress', e => { if (e.key === 'Enter') validarSenha(); });
-document.getElementById('fecharJogo').addEventListener('click', fecharJogo);
-document.getElementById('btnFecharFinal').addEventListener('click', fecharJogo);
-overlay.addEventListener('click', e => { if (e.target === overlay) fecharJogo(); });
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape' && overlay.classList.contains('ativo')) fecharJogo();
-});
+function savePhotos() {
+  try { localStorage.setItem('fotosRobo', JSON.stringify(localPhotos)); }
+  catch(err) { showToast('Espaço cheio! Remova algumas fotos.'); }
+}
+
+function renderPhotos() {
+  let html = '';
+  for (let i = 0; i < 10; i++) {
+    if (folderPhotosValid[i]) {
+      html += `
+        <div class="photo-thumb" style="border-color:#81c784;">
+          <img src="${FOLDER_PHOTOS[i]}" alt="Foto ${i+1}">
+          <div class="photo-label" style="background:rgba(76,175,80,0.9);">📁 F${i+1}</div>
+        </div>`;
+    } else if (localPhotos[i]) {
+      html += `
+        <div class="photo-thumb">
+          <img src="${localPhotos[i]}" alt="Foto ${i+1}">
+          <div class="photo-label">📤 F${i+1}</div>
+          <button class="remove-btn" onclick="deletePhoto(${i})">✕</button>
+        </div>`;
+    } else {
+      html += `<div class="photo-thumb empty">📷<br>F${i+1}</div>`;
+    }
+  }
+  photoGrid.innerHTML = html;
+}
+
+function deletePhoto(i) {
+  if (!confirm('Remover esta foto?')) return;
+  localPhotos.splice(i, 1);
+  savePhotos();
+  renderPhotos();
+}
+
+let toastTimer;
+function showToast(msg) {
+  toast.textContent = msg;
+  toast.classList.add('show');
+  toast.classList.remove('death');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove('show'), 2500);
+}
+
+function resetPlaceholder() {
+  player = { x: 30, y: 252, vx: 0, vy: 0, w: PW, h: PH, onGround: false, facing: 1 };
+  platforms = [];
+  coins = [];
+  turtles = [];
+  goal = null;
+  gameState = 'ready';
+}
+
+async function init() {
+  await checkFolderPhotos();
+  renderPhotos();
+  resetPlaceholder();
+  showStart();
+  requestAnimationFrame(loop);
+}
+init();
 </script>
 </body>
 </html>
