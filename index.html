@@ -2,1544 +2,208 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>🤖 O Robô da Filha — Jogo com Fotos e Tartarugas</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Uma Surpresa Especial ❤️</title>
+
 <style>
-  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-  body {
-    font-family: 'Segoe UI', Tahoma, sans-serif;
-    background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #a1c4fd 100%);
-    min-height: 100vh;
-    padding: 14px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    color: #333;
-  }
-  .wrap { width: 100%; max-width: 500px; }
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
 
-  header { text-align: center; margin-bottom: 10px; }
-  header h1 { color: #c2185b; font-size: 1.4em; line-height: 1.25; }
-  header p { color: #666; font-size: 0.82em; margin-top: 3px; font-style: italic; }
+body{
+    font-family: 'Segoe UI', sans-serif;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:100vh;
+    background:linear-gradient(135deg,#ff9ec4,#ffd6e7);
+    padding:20px;
+}
 
-  .hud {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: rgba(255,255,255,0.9);
-    padding: 8px 14px;
-    border-radius: 14px 14px 0 0;
-    font-weight: 700;
-    color: #c2185b;
-    font-size: 0.9em;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-  }
-  .hud .restart {
-    background: transparent;
-    border: 2px solid #f8bbd0;
-    color: #c2185b;
-    border-radius: 8px;
-    padding: 3px 8px;
-    font-size: 0.85em;
-    cursor: pointer;
-    font-weight: 700;
-  }
-  .hud .restart:active { background: #f8bbd0; }
+.card{
+    background:#fff;
+    width:100%;
+    max-width:500px;
+    padding:30px;
+    border-radius:25px;
+    text-align:center;
+    box-shadow:0 15px 35px rgba(0,0,0,.15);
+}
 
-  .board-wrap {
-    position: relative;
-    background: #87ceeb;
-    border-radius: 0 0 16px 16px;
-    overflow: hidden;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-    aspect-ratio: 3 / 2;
-    width: 100%;
-  }
-  canvas { display: block; width: 100%; height: 100%; touch-action: none; }
+h1{
+    color:#ff4d88;
+    margin-bottom:15px;
+}
 
-  .overlay {
-    position: absolute;
-    inset: 0;
-    background: rgba(255, 240, 245, 0.95);
-    backdrop-filter: blur(4px);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    padding: 12px;
-    text-align: center;
-    overflow: hidden;
-    z-index: 10;
-  }
-  .overlay.show { display: flex; }
-  .overlay-content {
-    position: relative;
-    z-index: 2;
-    max-width: 360px;
-    width: 100%;
-    max-height: 100%;
-    overflow-y: auto;
-  }
-  .overlay-content h2 {
-    color: #c2185b;
-    font-size: 1.25em;
-    margin-bottom: 8px;
-    line-height: 1.25;
-  }
-  .overlay-content p {
-    color: #555;
-    font-size: 0.85em;
-    line-height: 1.5;
-    margin-bottom: 10px;
-  }
+p{
+    color:#555;
+    margin-bottom:15px;
+}
 
-  .big-emoji {
-    font-size: 2.2em;
-    display: block;
-    margin-bottom: 4px;
-    animation: beat 1.2s infinite;
-  }
-  @keyframes beat {
-    0%,100% { transform: scale(1); }
-    50% { transform: scale(1.12); }
-  }
+input{
+    width:100%;
+    padding:14px;
+    border:2px solid #ffd1de;
+    border-radius:12px;
+    font-size:16px;
+    margin-bottom:15px;
+}
 
-  .hint-controls {
-    background: rgba(255,255,255,0.8);
-    border-radius: 10px;
-    padding: 8px 12px;
-    margin: 8px 0;
-    font-size: 0.78em;
-    color: #666;
-    line-height: 1.5;
-  }
+button{
+    background:#ff4d88;
+    color:white;
+    border:none;
+    padding:14px 25px;
+    font-size:16px;
+    border-radius:12px;
+    cursor:pointer;
+    transition:.3s;
+}
 
-  .btn {
-    background: linear-gradient(135deg, #c2185b, #e91e63);
-    color: white;
-    border: none;
-    padding: 11px 24px;
-    border-radius: 12px;
-    font-size: 0.95em;
-    font-weight: 700;
-    cursor: pointer;
-    transition: transform 0.15s, box-shadow 0.15s;
-    font-family: inherit;
-    margin: 4px;
-  }
-  .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(194,24,91,0.4); }
-  .btn:active { transform: scale(0.97); }
+button:hover{
+    transform:scale(1.05);
+}
 
-  .photo-reward {
-    width: 170px;
-    height: 130px;
-    margin: 8px auto;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 6px 16px rgba(0,0,0,0.25);
-    border: 3px solid #fff;
-    background: #f0f0f0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    animation: photoPop 0.6s cubic-bezier(.3,1.5,.6,1);
-  }
-  @keyframes photoPop {
-    0% { transform: scale(0.5) rotate(-10deg); opacity: 0; }
-    100% { transform: scale(1) rotate(0); opacity: 1; }
-  }
-  .photo-reward img { width: 100%; height: 100%; object-fit: cover; }
-  .photo-reward.empty { color: #999; font-size: 0.75em; text-align: center; padding: 8px; flex-direction: column; }
+.erro{
+    color:red;
+    margin-top:10px;
+}
 
-  .reward-msg {
-    font-size: 0.85em !important;
-    color: #c2185b !important;
-    font-weight: 700;
-    margin-bottom: 6px !important;
-  }
+#giftBox,
+#surpresa{
+    display:none;
+}
 
-  .coins-phase {
-    background: linear-gradient(135deg, #fff8e1, #ffecb3);
-    border: 2px solid #ffd54f;
-    border-radius: 12px;
-    padding: 8px 14px;
-    margin: 10px 0;
-    font-size: 0.9em;
-    color: #e65100;
-    font-weight: 700;
-  }
+.presente{
+    font-size:90px;
+    cursor:pointer;
+    animation:pular 1s infinite;
+}
 
-  .total-coins-display {
-    background: linear-gradient(135deg, #fff8e1, #ffe082);
-    border: 3px solid #ffb300;
-    border-radius: 16px;
-    padding: 15px;
-    margin: 12px 0;
-    animation: coinPulse 1s infinite alternate;
-  }
-  @keyframes coinPulse {
-    from { transform: scale(1); }
-    to { transform: scale(1.03); }
-  }
+@keyframes pular{
+    50%{
+        transform:translateY(-10px);
+    }
+}
 
-  .prize-box {
-    background: linear-gradient(135deg, #fff1f6, #ffe0ec);
-    border: 2px dashed #e91e63;
-    border-radius: 12px;
-    padding: 10px;
-    margin: 8px 0;
-    color: #ad1457;
-    font-weight: 600;
-    font-size: 0.85em;
-    line-height: 1.45;
-  }
+img{
+    width:100%;
+    margin-top:15px;
+    border-radius:15px;
+    box-shadow:0 5px 20px rgba(0,0,0,.2);
+}
 
-  .controls {
-    display: grid;
-    grid-template-columns: 1fr 1.3fr 1fr;
-    gap: 8px;
-    margin-top: 12px;
-  }
-  .ctrl-btn {
-    background: rgba(255,255,255,0.92);
-    border: 2px solid #f8bbd0;
-    color: #c2185b;
-    font-size: 1.3em;
-    padding: 15px 0;
-    border-radius: 14px;
-    cursor: pointer;
-    font-weight: 700;
-    user-select: none;
-    transition: background 0.1s, transform 0.1s;
-    font-family: inherit;
-  }
-  .ctrl-btn.pressed, .ctrl-btn:active {
-    background: #f8bbd0;
-    transform: scale(0.95);
-  }
-  .ctrl-btn.jump { font-size: 0.9em; }
+.mensagem{
+    margin-top:20px;
+    line-height:1.8;
+    color:#444;
+    font-size:18px;
+}
 
-  .card {
-    background: rgba(255,255,255,0.88);
-    border-radius: 16px;
-    padding: 16px;
-    margin-top: 16px;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
-  }
-  .card h2 {
-    color: #c2185b;
-    font-size: 1.05em;
-    margin-bottom: 6px;
-  }
-  .card .info {
-    font-size: 0.78em;
-    color: #666;
-    line-height: 1.55;
-    background: #f5f5f5;
-    padding: 10px;
-    border-radius: 10px;
-    margin-bottom: 8px;
-  }
-  .card .info code {
-    background: #ffe4ec;
-    color: #c2185b;
-    padding: 1px 5px;
-    border-radius: 4px;
-    font-size: 0.9em;
-    font-weight: 600;
-  }
-  .card .info .folder-badge {
-    display: inline-block;
-    background: #81c784;
-    color: white;
-    padding: 1px 6px;
-    border-radius: 4px;
-    font-size: 0.85em;
-    font-weight: 700;
-  }
-
-  .file-input-wrapper { position: relative; overflow: hidden; display: inline-block; }
-  .file-input-wrapper input[type="file"] { position: absolute; left: -9999px; }
-  .file-input-wrapper label {
-    display: inline-block;
-    background: linear-gradient(135deg, #7e57c2, #ab47bc);
-    color: white;
-    padding: 10px 20px;
-    border-radius: 12px;
-    cursor: pointer;
-    font-weight: 700;
-    font-size: 0.9em;
-    transition: transform 0.15s, box-shadow 0.15s;
-    margin-top: 4px;
-  }
-  .file-input-wrapper label:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(126,87,194,0.4);
-  }
-
-  .photo-grid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 6px;
-    margin-top: 12px;
-  }
-  .photo-thumb {
-    position: relative;
-    aspect-ratio: 1;
-    border-radius: 10px;
-    overflow: hidden;
-    border: 2px solid #f8bbd0;
-    background: #fce4ec;
-  }
-  .photo-thumb img { width: 100%; height: 100%; object-fit: cover; }
-  .photo-thumb.empty {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #f8bbd0;
-    font-size: 0.6em;
-    text-align: center;
-    padding: 4px;
-    border-style: dashed;
-  }
-  .photo-thumb .photo-label {
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    background: rgba(194,24,91,0.85);
-    color: white;
-    font-size: 0.5em;
-    text-align: center;
-    padding: 2px;
-    font-weight: 700;
-  }
-  .photo-thumb .remove-btn {
-    position: absolute;
-    top: 2px; right: 2px;
-    background: rgba(0,0,0,0.6);
-    color: white;
-    border: none;
-    width: 18px; height: 18px;
-    border-radius: 50%;
-    font-size: 10px;
-    cursor: pointer;
-    padding: 0;
-    line-height: 1;
-  }
-  .photo-thumb .remove-btn:hover { background: #e91e63; }
-
-  .hint { text-align: center; color: #777; font-size: 0.75em; margin-top: 12px; line-height: 1.5; }
-
-  .confetti {
-    position: absolute;
-    top: -20px;
-    border-radius: 2px;
-    animation: fall linear forwards;
-    pointer-events: none;
-    z-index: 1;
-  }
-  @keyframes fall {
-    0% { transform: translateY(0) rotate(0); opacity: 1; }
-    100% { transform: translateY(400px) rotate(720deg); opacity: 0.9; }
-  }
-
-  .toast {
-    position: fixed;
-    bottom: 24px;
-    left: 50%;
-    transform: translateX(-50%) translateY(100px);
-    background: #c2185b;
-    color: white;
-    padding: 12px 24px;
-    border-radius: 12px;
-    font-weight: 700;
-    font-size: 0.9em;
-    opacity: 0;
-    transition: all 0.4s;
-    z-index: 1000;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
-    text-align: center;
-  }
-  .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
-  .toast.death { background: #e53935; }
-
-  @media (max-width: 380px) {
-    header h1 { font-size: 1.15em; }
-    .hud { font-size: 0.8em; }
-    .overlay-content h2 { font-size: 1.1em; }
-    .photo-reward { width: 140px; height: 100px; }
-  }
+.cora{
+    color:#ff4d88;
+    font-size:24px;
+}
 </style>
 </head>
 <body>
 
-<div class="wrap">
-  <header>
-    <h1>🤖 O Robô da Filha 💖</h1>
-    <p>Pule nas tartarugas 🐢 pra ganhar moedas!</p>
-  </header>
+<div class="card">
 
-  <div class="hud">
-    <span>Fase <b id="levelNum">1</b>/10</span>
-    <span>🪙 <b id="coinCount">0</b></span>
-    <button class="restart" onclick="restartLevel()">🔄</button>
-  </div>
+    <h1>❤️ Oi Filha ❤️</h1>
 
-  <div class="board-wrap">
-    <canvas id="game"></canvas>
-    <div class="overlay show" id="overlay">
-      <div class="overlay-content" id="overlayContent"></div>
+    <div id="quiz">
+        <p>Responda a pergunta para abrir sua surpresa.</p>
+
+        <h3 style="margin-bottom:15px;">
+            Qual cidade eu sempre vou visitar no meu coração?
+        </h3>
+
+        <input
+            type="text"
+            id="resposta"
+            placeholder="Digite sua resposta">
+
+        <button onclick="verificar()">
+            Responder
+        </button>
+
+        <div id="erro" class="erro"></div>
     </div>
-  </div>
 
-  <div class="controls">
-    <button class="ctrl-btn" id="btnLeft">◀</button>
-    <button class="ctrl-btn jump" id="btnJump">⬆ PULAR</button>
-    <button class="ctrl-btn" id="btnRight">▶</button>
-  </div>
+    <div id="giftBox">
+        <h2>Parabéns! 🎉</h2>
+        <p>Você acertou!</p>
 
-  <div class="card">
-    <h2>📸 Fotos das Fases (10 fotos!)</h2>
-    <div class="info">
-      <strong>OPÇÃO 1 (recomendada):</strong> crie uma pasta chamada <code>fotos</code> do lado deste arquivo HTML e coloque as imagens com os nomes <code>foto1.jpg</code>, <code>foto2.jpg</code>... até <code>foto10.jpg</code>. Elas aparecem com o selo <span class="folder-badge">📁</span>.<br><br>
-      <strong>OPÇÃO 2:</strong> clique no botão roxo abaixo e envie as fotos pelo site. Elas ficam salvas no navegador com o selo <span style="background:#7e57c2;color:white;padding:1px 6px;border-radius:4px;font-size:0.85em;font-weight:700;">📤</span>.
+        <div class="presente" onclick="abrirPresente()">
+            🎁
+        </div>
+
+        <p>Clique no presente.</p>
     </div>
-    <div class="file-input-wrapper">
-      <input type="file" id="photoInput" accept="image/*" multiple>
-      <label for="photoInput">➕ Adicionar fotos pelo site</label>
-    </div>
-    <div class="photo-grid" id="photoGrid"></div>
-  </div>
 
-  <p class="hint">Teclado: ← → andar • ESPAÇO/↑ pular<br>Mobile: use os botões ou deslize para pular<br>🐢 Pule em cima das tartarugas pra ganhar 🪙!</p>
+    <div id="surpresa">
+        <span class="cora">❤️❤️❤️</span>
+
+        <img src="./img/foto1.jpg" alt="Minha filha">
+
+        <div class="mensagem">
+            Filha,
+
+            não importa a distância,
+            você sempre estará dentro do meu coração.
+
+            Todos os dias penso em você,
+            sinto orgulho da pessoa maravilhosa que está se tornando
+            e agradeço por ter você na minha vida.
+
+            Que você nunca esqueça o quanto é amada,
+            especial e importante para mim.
+
+            Te amo infinitamente! ❤️
+
+            Com todo meu carinho.
+        </div>
+    </div>
+
 </div>
 
-<div class="toast" id="toast"></div>
-
 <script>
-// ═══════════════════════════════════════════════════════════════
-// ⚙️ CONFIGURAÇÃO DE DIFICULDADE
-// ═══════════════════════════════════════════════════════════════
-const RESTART_FROM_LEVEL_1 = false;
-const GRACE_PERIOD_MS = 1500;
-const TOTAL_LEVELS = 10;
-// ═══════════════════════════════════════════════════════════════
+function verificar(){
 
-// ═══════════════════════════════════════════════════════════════
-// 📸 CONFIGURAÇÃO DAS FOTOS DA PASTA (10 fotos!)
-// ═══════════════════════════════════════════════════════════════
-const FOLDER_PHOTOS = [
-  "img/foto51.jpg",
-  "img/foto52.jpg",
-  "img/foto57.jpg",
-  "img/foto58.jpg",
-  "img/foto44.jpg",
-  "img/foto54.jpg",
-  "img/foto55.jpg",
-  "img/foto18.jpg",
-  "img/foto13.jpg",
-  "img/foto2.jpg"
-];
+    const resposta =
+    document.getElementById("resposta")
+    .value
+    .trim()
+    .toLowerCase();
 
-// ═══════════════════════════════════════════════════════════════
-// CONFIG DO JOGO
-// ═══════════════════════════════════════════════════════════════
-const W = 480, H = 320;
-const canvas = document.getElementById('game');
-const ctx = canvas.getContext('2d');
-canvas.width = W;
-canvas.height = H;
+    const correta = "joinville";
 
-const GRAVITY = 0.55;
-const JUMP = -11;
-const SPEED = 3.5;
-const MAX_FALL = 12;
-const PW = 24, PH = 28;
-const TW = 26, TH = 22;
+    if(resposta === correta){
 
-const overlay = document.getElementById('overlay');
-const overlayContent = document.getElementById('overlayContent');
-const levelNumEl = document.getElementById('levelNum');
-const coinCountEl = document.getElementById('coinCount');
-const photoGrid = document.getElementById('photoGrid');
-const photoInput = document.getElementById('photoInput');
-const toast = document.getElementById('toast');
+        document.getElementById("quiz")
+        .style.display="none";
 
-// Fotos
-let localPhotos = JSON.parse(localStorage.getItem('fotosRobo') || '[]');
-let folderPhotosValid = new Array(10).fill(false);
-
-function checkFolderPhotos() {
-  return Promise.all(FOLDER_PHOTOS.map((src, i) =>
-    new Promise(resolve => {
-      const img = new Image();
-      img.onload = () => { folderPhotosValid[i] = true; resolve(); };
-      img.onerror = () => { folderPhotosValid[i] = false; resolve(); };
-      img.src = src;
-    })
-  ));
-}
-function getPhotoForLevel(i) {
-  if (folderPhotosValid[i]) return FOLDER_PHOTOS[i];
-  if (localPhotos[i]) return localPhotos[i];
-  return null;
-}
-
-// ═══════════════════════════════════════════════════════════════
-// 10 FASES (progressivamente mais difíceis)
-// ═══════════════════════════════════════════════════════════════
-const LEVELS = [
-  // ─── FASE 1 ───
-  { name: "Primeiro Passo",
-    platforms: [
-      {x:0, y:280, w:480, h:40},
-      {x:180, y:220, w:100, h:16}
-    ],
-    coins: [{x:110, y:245}, {x:230, y:185}, {x:380, y:245}],
-    turtles: [
-      { type: 'ground', x: 280, y: 258, minX: 250, maxX: 460, speed: 1.0 }
-    ],
-    start: {x:30, y:252},
-    goal: {x:430, y:280}
-  },
-  // ─── FASE 2 ───
-  { name: "Pulo do Gato",
-    platforms: [
-      {x:0, y:280, w:160, h:40},
-      {x:260, y:280, w:220, h:40},
-      {x:180, y:210, w:70, h:16}
-    ],
-    coins: [{x:80, y:245}, {x:215, y:175}, {x:330, y:245}, {x:420, y:245}],
-    turtles: [
-      { type: 'ground', x: 340, y: 258, minX: 280, maxX: 460, speed: 1.1 },
-      { type: 'flyer',  x: 210, y: 160, minX: 150, maxX: 250, speed: 1.4 }
-    ],
-    start: {x:30, y:252},
-    goal: {x:430, y:280}
-  },
-  // ─── FASE 3 ───
-  { name: "Escadinha",
-    platforms: [
-      {x:0, y:280, w:480, h:40},
-      {x:100, y:230, w:80, h:16},
-      {x:220, y:180, w:80, h:16},
-      {x:340, y:130, w:80, h:16}
-    ],
-    coins: [{x:60, y:245}, {x:140, y:200}, {x:260, y:150}, {x:380, y:100}],
-    turtles: [
-      { type: 'ground', x: 280, y: 258, minX: 130, maxX: 440, speed: 1.2 },
-      { type: 'flyer',  x: 250, y: 145, minX: 150, maxX: 320, speed: 1.6 }
-    ],
-    start: {x:30, y:252},
-    goal: {x:380, y:130}
-  },
-  // ─── FASE 4 ───
-  { name: "Zigue-Zague",
-    platforms: [
-      {x:0, y:280, w:120, h:40},
-      {x:60, y:220, w:100, h:16},
-      {x:200, y:170, w:100, h:16},
-      {x:340, y:220, w:100, h:16},
-      {x:400, y:280, w:80, h:40}
-    ],
-    coins: [{x:60, y:250}, {x:110, y:185}, {x:250, y:135}, {x:390, y:185}, {x:440, y:245}],
-    turtles: [
-      { type: 'ground', x: 120, y: 198, minX: 80, maxX: 150, speed: 1.2 },
-      { type: 'flyer',  x: 250, y: 100, minX: 180, maxX: 320, speed: 1.7 }
-    ],
-    start: {x:30, y:252},
-    goal: {x:420, y:280}
-  },
-  // ─── FASE 5 ───
-  { name: "Desafio Final 1",
-    platforms: [
-      {x:0, y:280, w:160, h:40},
-      {x:180, y:240, w:120, h:16},
-      {x:340, y:180, w:80, h:16},
-      {x:400, y:280, w:80, h:40}
-    ],
-    coins: [{x:70, y:245}, {x:240, y:205}, {x:370, y:145}, {x:440, y:245}],
-    turtles: [
-      { type: 'ground', x: 240, y: 218, minX: 190, maxX: 290, speed: 1.5 },
-      { type: 'ground', x: 430, y: 258, minX: 410, maxX: 460, speed: 1.8 },
-      { type: 'flyer',  x: 120, y: 200, minX: 70,  maxX: 170, speed: 1.7 }
-    ],
-    start: {x:30, y:252},
-    goal: {x:370, y:180}
-  },
-  // ─── FASE 6 ───
-  { name: "Mais Tartarugas",
-    platforms: [
-      {x:0, y:280, w:480, h:40},
-      {x:120, y:220, w:100, h:16},
-      {x:280, y:180, w:100, h:16}
-    ],
-    coins: [{x:60, y:245}, {x:170, y:185}, {x:330, y:145}, {x:440, y:245}],
-    turtles: [
-      { type: 'ground', x: 250, y: 258, minX: 180, maxX: 460, speed: 1.3 },
-      { type: 'flyer',  x: 350, y: 130, minX: 260, maxX: 440, speed: 1.5 }
-    ],
-    start: {x:30, y:252},
-    goal: {x:440, y:280}
-  },
-  // ─── FASE 7 ───
-  { name: "Voo Duplo",
-    platforms: [
-      {x:0, y:280, w:140, h:40},
-      {x:240, y:280, w:240, h:40},
-      {x:140, y:210, w:80, h:16}
-    ],
-    coins: [{x:60, y:245}, {x:180, y:175}, {x:340, y:245}, {x:430, y:245}],
-    turtles: [
-      { type: 'ground', x: 300, y: 258, minX: 240, maxX: 450, speed: 1.4 },
-      { type: 'flyer',  x: 100, y: 160, minX: 60,  maxX: 200, speed: 1.6 },
-      { type: 'flyer',  x: 350, y: 180, minX: 280, maxX: 450, speed: 1.7 }
-    ],
-    start: {x:30, y:252},
-    goal: {x:440, y:280}
-  },
-  // ─── FASE 8 ───
-  { name: "Escada do Perigo",
-    platforms: [
-      {x:0, y:280, w:100, h:40},
-      {x:80, y:230, w:80, h:16},
-      {x:180, y:190, w:80, h:16},
-      {x:280, y:230, w:80, h:16},
-      {x:380, y:180, w:100, h:16},
-      {x:380, y:280, w:100, h:40}
-    ],
-    coins: [{x:40, y:245}, {x:110, y:200}, {x:210, y:160}, {x:300, y:200}, {x:420, y:150}, {x:440, y:245}],
-    turtles: [
-      { type: 'ground', x: 420, y: 258, minX: 380, maxX: 460, speed: 1.5 },
-      { type: 'flyer',  x: 220, y: 130, minX: 100, maxX: 320, speed: 1.7 },
-      { type: 'flyer',  x: 300, y: 150, minX: 180, maxX: 360, speed: 1.9 }
-    ],
-    start: {x:30, y:252},
-    goal: {x:420, y:180}
-  },
-  // ─── FASE 9 ───
-  { name: "Corredor",
-    platforms: [
-      {x:0, y:280, w:180, h:40},
-      {x:250, y:250, w:80, h:16},
-      {x:360, y:280, w:120, h:40}
-    ],
-    coins: [{x:70, y:245}, {x:280, y:215}, {x:420, y:245}],
-    turtles: [
-      { type: 'ground', x: 300, y: 258, minX: 250, maxX: 470, speed: 1.8 },
-      { type: 'ground', x: 130, y: 258, minX: 100, maxX: 160, speed: 1.6 },
-      { type: 'flyer',  x: 320, y: 160, minX: 250, maxX: 440, speed: 2.0 }
-    ],
-    start: {x:30, y:252},
-    goal: {x:440, y:280}
-  },
-  // ─── FASE 10 ───
-  { name: "Desafio Supremo",
-    platforms: [
-      {x:0, y:280, w:130, h:40},
-      {x:160, y:240, w:100, h:16},
-      {x:290, y:200, w:90, h:16},
-      {x:400, y:280, w:80, h:40}
-    ],
-    coins: [{x:70, y:245}, {x:210, y:205}, {x:330, y:165}, {x:440, y:245}],
-    turtles: [
-      { type: 'ground', x: 210, y: 218, minX: 170, maxX: 250, speed: 1.6 },
-      { type: 'ground', x: 420, y: 258, minX: 400, maxX: 460, speed: 2.0 },
-      { type: 'flyer',  x: 250, y: 130, minX: 100, maxX: 380, speed: 2.0 },
-      { type: 'flyer',  x: 380, y: 160, minX: 300, maxX: 460, speed: 2.2 }
-    ],
-    start: {x:30, y:252},
-    goal: {x:400, y:280}
-  }
-];
-
-// ═══════════════════════════════════════════════════════════════
-// ESTADO
-// ═══════════════════════════════════════════════════════════════
-let player, platforms, coins, turtles, goal, levelIndex = 0, gameState;
-let totalCoins = 0;
-let levelCoinsStart = 0;
-let deathTimer = 0;
-let graceTimer = 0;
-let floatingTexts = [];
-let keys = { left: false, right: false };
-let lastTime = 0, accumulator = 0;
-const STEP = 1000 / 60;
-let actx = null;
-
-function beep(freq, dur = 0.08, type = 'sine', vol = 0.06) {
-  try {
-    if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
-    const o = actx.createOscillator();
-    const g = actx.createGain();
-    o.type = type;
-    o.frequency.value = freq;
-    g.gain.setValueAtTime(vol, actx.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.0001, actx.currentTime + dur);
-    o.connect(g); g.connect(actx.destination);
-    o.start(); o.stop(actx.currentTime + dur);
-  } catch(e) {}
-}
-
-function loadLevel(i) {
-  levelIndex = i;
-  levelCoinsStart = totalCoins;
-  const L = LEVELS[i];
-  player = {
-    x: L.start.x, y: L.start.y,
-    vx: 0, vy: 0,
-    w: PW, h: PH,
-    onGround: false,
-    facing: 1
-  };
-  platforms = L.platforms.map(p => ({...p}));
-  coins = L.coins.map(c => ({...c, collected: false}));
-  turtles = (L.turtles || []).map(t => ({
-    type: t.type,
-    flying: t.type === 'flyer',
-    x: t.x, y: t.y, baseY: t.y,
-    w: TW, h: TH,
-    vx: t.speed, minX: t.minX, maxX: t.maxX,
-    facing: 1,
-    bobPhase: Math.random() * Math.PI * 2,
-    dying: false, deathTimer: 0, deathVy: 0
-  }));
-  goal = { x: L.goal.x, y: L.goal.y - 50, w: 32, h: 50 };
-  gameState = 'playing';
-  deathTimer = 0;
-  graceTimer = GRACE_PERIOD_MS;
-  floatingTexts = [];
-  hideOverlay();
-  updateHUD();
-  if (actx && actx.state === 'suspended') actx.resume();
-}
-
-function updateHUD() {
-  levelNumEl.textContent = levelIndex + 1;
-  coinCountEl.textContent = totalCoins;
-}
-
-function aabb(a, b) {
-  return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
-}
-
-function update() {
-  updateFloatingTexts();
-
-  if (gameState === 'dying') {
-    deathTimer += STEP;
-    player.vy += GRAVITY * 0.8;
-    player.y += player.vy;
-    if (deathTimer > 1400) {
-      if (RESTART_FROM_LEVEL_1) {
-        totalCoins = 0;
-        loadLevel(0);
-      } else {
-        totalCoins = levelCoinsStart;
-        loadLevel(levelIndex);
-      }
+        document.getElementById("giftBox")
+        .style.display="block";
     }
-    return;
-  }
-
-  if (gameState !== 'playing') return;
-
-  if (graceTimer > 0) {
-    graceTimer -= STEP;
-    if (graceTimer < 0) graceTimer = 0;
-  }
-
-  let dir = 0;
-  if (keys.left) dir -= 1;
-  if (keys.right) dir += 1;
-  player.vx = dir * SPEED;
-  if (dir !== 0) player.facing = dir;
-
-  player.x += player.vx;
-  for (const p of platforms) {
-    if (aabb(player, p)) {
-      if (player.vx > 0) player.x = p.x - player.w;
-      else if (player.vx < 0) player.x = p.x + p.w;
+    else{
+        document.getElementById("erro")
+        .innerText="Resposta incorreta 😢 Tente novamente.";
     }
-  }
-  if (player.x < 0) player.x = 0;
-  if (player.x + player.w > W) player.x = W - player.w;
-
-  player.vy += GRAVITY;
-  if (player.vy > MAX_FALL) player.vy = MAX_FALL;
-  player.y += player.vy;
-  player.onGround = false;
-  for (const p of platforms) {
-    if (aabb(player, p)) {
-      if (player.vy > 0) {
-        player.y = p.y - player.h;
-        player.vy = 0;
-        player.onGround = true;
-      } else if (player.vy < 0) {
-        player.y = p.y + p.h;
-        player.vy = 0;
-      }
-    }
-  }
-
-  if (player.y > H + 60) {
-    beep(200, 0.15, 'sawtooth', 0.05);
-    player.x = LEVELS[levelIndex].start.x;
-    player.y = LEVELS[levelIndex].start.y;
-    player.vx = 0; player.vy = 0;
-    showDeathToast('💧 Caiu! Cuidado com os buracos!');
-    return;
-  }
-
-  updateTurtles();
-
-  if (gameState !== 'playing') return;
-
-  for (const c of coins) {
-    if (c.collected) continue;
-    const cr = { x: c.x - 8, y: c.y - 8, w: 16, h: 16 };
-    if (aabb(player, cr)) {
-      c.collected = true;
-      totalCoins++;
-      updateHUD();
-      beep(1200 + Math.random() * 200, 0.08, 'sine', 0.05);
-    }
-  }
-
-  if (aabb(player, goal)) levelComplete();
 }
 
-function updateTurtles() {
-  const inGrace = graceTimer > 0;
+function abrirPresente(){
 
-  for (let i = turtles.length - 1; i >= 0; i--) {
-    const t = turtles[i];
+    document.getElementById("giftBox")
+    .style.display="none";
 
-    if (t.dying) {
-      t.deathTimer++;
-      t.deathVy += GRAVITY * 0.7;
-      t.y += t.deathVy;
-      if (t.deathTimer > 70 || t.y > H + 60) {
-        turtles.splice(i, 1);
-      }
-      continue;
-    }
-
-    if (inGrace) {
-      if (t.flying) {
-        t.bobPhase += 0.06;
-        t.y = t.baseY + Math.sin(t.bobPhase) * 8;
-      }
-      continue;
-    }
-
-    if (t.flying) {
-      t.bobPhase += 0.06;
-      t.y = t.baseY + Math.sin(t.bobPhase) * 8;
-    }
-
-    t.x += t.vx;
-    if (t.x <= t.minX) { t.x = t.minX; t.vx = Math.abs(t.vx); }
-    if (t.x >= t.maxX) { t.x = t.maxX; t.vx = -Math.abs(t.vx); }
-    t.facing = t.vx > 0 ? 1 : -1;
-
-    if (aabb(player, t)) {
-      const prevBottom = player.y + player.h - player.vy;
-      const turtleMidY = t.y + t.h * 0.5;
-      const isStomp = player.vy > 0 && prevBottom <= turtleMidY + 4;
-
-      if (isStomp) {
-        killTurtle(t);
-      } else {
-        playerHitTurtle();
-        return;
-      }
-    }
-  }
+    document.getElementById("surpresa")
+    .style.display="block";
 }
-
-function killTurtle(t) {
-  t.dying = true;
-  t.deathTimer = 0;
-  t.deathVy = -5.5;
-
-  const reward = t.flying ? 10 : 5;
-  totalCoins += reward;
-  updateHUD();
-
-  floatingTexts.push({
-    x: t.x + t.w / 2,
-    y: t.y - 6,
-    text: '+' + reward,
-    icon: '🪙',
-    timer: 70,
-    maxTimer: 70
-  });
-
-  player.vy = -9;
-  player.onGround = false;
-
-  beep(620, 0.06, 'square', 0.09);
-  setTimeout(() => beep(880, 0.09, 'square', 0.1), 50);
-  setTimeout(() => beep(1200, 0.12, 'sine', 0.1), 150);
-}
-
-function updateFloatingTexts() {
-  for (let i = floatingTexts.length - 1; i >= 0; i--) {
-    const ft = floatingTexts[i];
-    ft.timer--;
-    ft.y -= 0.9;
-    if (ft.timer <= 0) floatingTexts.splice(i, 1);
-  }
-}
-
-function playerHitTurtle() {
-  gameState = 'dying';
-  deathTimer = 0;
-  player.vy = -13;
-  player.vx = 0;
-  beep(500, 0.1, 'square', 0.09);
-  setTimeout(() => beep(380, 0.12, 'square', 0.09), 120);
-  setTimeout(() => beep(260, 0.15, 'square', 0.09), 260);
-  setTimeout(() => beep(160, 0.35, 'square', 0.09), 420);
-  showDeathToast('🐢 A tartaruga te pegou! Tenta de novo!');
-}
-
-function showDeathToast(msg) {
-  toast.textContent = msg;
-  toast.classList.add('show', 'death');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => {
-    toast.classList.remove('show', 'death');
-  }, 2200);
-}
-
-function drawCloud(x, y, s) {
-  ctx.fillStyle = 'rgba(255,255,255,0.85)';
-  ctx.beginPath();
-  ctx.arc(x, y, 12 * s, 0, Math.PI * 2);
-  ctx.arc(x + 15 * s, y + 3 * s, 10 * s, 0, Math.PI * 2);
-  ctx.arc(x - 15 * s, y + 3 * s, 10 * s, 0, Math.PI * 2);
-  ctx.arc(x + 6 * s, y - 6 * s, 9 * s, 0, Math.PI * 2);
-  ctx.fill();
-}
-
-function roundRect(x, y, w, h, r) {
-  ctx.beginPath();
-  ctx.moveTo(x + r, y);
-  ctx.arcTo(x + w, y, x + w, y + h, r);
-  ctx.arcTo(x + w, y + h, x, y + h, r);
-  ctx.arcTo(x, y + h, x, y, r);
-  ctx.arcTo(x, y, x + w, y, r);
-  ctx.closePath();
-}
-
-function draw() {
-  const sky = ctx.createLinearGradient(0, 0, 0, H);
-  sky.addColorStop(0, '#87ceeb');
-  sky.addColorStop(1, '#e0f6ff');
-  ctx.fillStyle = sky;
-  ctx.fillRect(0, 0, W, H);
-
-  drawCloud(80, 60, 1);
-  drawCloud(320, 90, 1.2);
-  drawCloud(180, 40, 0.7);
-
-  for (const p of platforms) {
-    const grad = ctx.createLinearGradient(0, p.y, 0, p.y + p.h);
-    grad.addColorStop(0, '#7a8b99');
-    grad.addColorStop(0.5, '#5a6b79');
-    grad.addColorStop(1, '#3a4b59');
-    ctx.fillStyle = grad;
-    ctx.fillRect(p.x, p.y, p.w, p.h);
-    ctx.fillStyle = '#9aabba';
-    ctx.fillRect(p.x, p.y, p.w, 2);
-    ctx.fillStyle = '#2a3b49';
-    for (let x = p.x + 8; x < p.x + p.w - 4; x += 24) {
-      ctx.beginPath();
-      ctx.arc(x, p.y + p.h / 2, 2, 0, Math.PI * 2);
-      ctx.fill();
-    }
-  }
-
-  const t = Date.now() / 200;
-  for (const c of coins) {
-    if (c.collected) continue;
-    const bob = Math.sin(t + c.x) * 2;
-    const y = c.y + bob;
-    const grad = ctx.createRadialGradient(c.x, y, 1, c.x, y, 14);
-    grad.addColorStop(0, 'rgba(255,215,0,0.55)');
-    grad.addColorStop(1, 'rgba(255,215,0,0)');
-    ctx.fillStyle = grad;
-    ctx.beginPath(); ctx.arc(c.x, y, 14, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = '#ffd700';
-    ctx.beginPath(); ctx.arc(c.x, y, 8, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = '#ffeb3b';
-    ctx.beginPath(); ctx.arc(c.x, y, 5, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = 'rgba(255,255,255,0.8)';
-    ctx.beginPath(); ctx.arc(c.x - 2, y - 2, 2, 0, Math.PI * 2); ctx.fill();
-  }
-
-  if (goal) {
-    ctx.fillStyle = '#555';
-    ctx.fillRect(goal.x + goal.w/2 - 2, goal.y, 4, goal.h);
-    const wave = Math.sin(Date.now() / 300) * 4;
-    ctx.fillStyle = '#e91e63';
-    ctx.beginPath();
-    ctx.moveTo(goal.x + goal.w/2 + 2, goal.y + 4);
-    ctx.lineTo(goal.x + goal.w/2 + 30 + wave, goal.y + 14);
-    ctx.lineTo(goal.x + goal.w/2 + 2, goal.y + 24);
-    ctx.closePath();
-    ctx.fill();
-    ctx.font = '14px serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('⭐', goal.x + goal.w/2 + 12, goal.y + 20);
-  }
-
-  for (const tt of turtles) drawTurtle(tt);
-
-  if (player) drawRobot();
-
-  drawFloatingTexts();
-
-  if (graceTimer > 0 && gameState === 'playing') {
-    drawGraceIndicator();
-  }
-}
-
-function drawGraceIndicator() {
-  const seconds = Math.ceil(graceTimer / 1000);
-  const alpha = Math.min(1, graceTimer / 400);
-
-  ctx.globalAlpha = alpha * 0.85;
-
-  const boxW = 220, boxH = 65;
-  const boxX = (W - boxW) / 2;
-  const boxY = 70;
-  
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
-  roundRect(boxX, boxY, boxW, boxH, 14);
-  ctx.fill();
-  ctx.strokeStyle = '#e91e63';
-  ctx.lineWidth = 3;
-  roundRect(boxX, boxY, boxW, boxH, 14);
-  ctx.stroke();
-
-  ctx.fillStyle = '#c2185b';
-  ctx.font = 'bold 20px "Segoe UI", sans-serif';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText('🐢 Prepare-se!', W / 2, boxY + 22);
-
-  ctx.font = 'bold 28px "Segoe UI", sans-serif';
-  ctx.fillStyle = '#e91e63';
-  ctx.fillText(seconds, W / 2, boxY + 48);
-
-  ctx.globalAlpha = 1;
-  ctx.textBaseline = 'alphabetic';
-}
-
-function drawTurtle(t) {
-  if (t.dying) {
-    const progress = Math.min(1, t.deathTimer / 70);
-    ctx.save();
-    ctx.globalAlpha = 1 - progress * 0.6;
-    ctx.translate(t.x + t.w / 2, t.y + t.h / 2);
-    ctx.rotate(progress * Math.PI * 2);
-    ctx.translate(-(t.x + t.w / 2), -(t.y + t.h / 2));
-    drawTurtleBody(t);
-    ctx.restore();
-    return;
-  }
-  drawTurtleBody(t);
-}
-
-function drawTurtleBody(t) {
-  const {x, y, w, h, facing} = t;
-  const dir = facing;
-  const walk = Math.sin(Date.now() / 100) * 1.5;
-
-  if (t.flying) {
-    const flap = Math.sin(Date.now() / 80) * 0.5;
-    ctx.save();
-    ctx.translate(x + 4, y + h / 2);
-    ctx.rotate(-0.4 + flap);
-    ctx.fillStyle = 'rgba(220, 240, 255, 0.95)';
-    ctx.strokeStyle = 'rgba(130, 180, 220, 0.9)';
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.ellipse(-8, 0, 10, 5, 0, 0, Math.PI * 2);
-    ctx.fill(); ctx.stroke();
-    ctx.restore();
-    ctx.save();
-    ctx.translate(x + w - 4, y + h / 2);
-    ctx.rotate(0.4 - flap);
-    ctx.fillStyle = 'rgba(220, 240, 255, 0.95)';
-    ctx.strokeStyle = 'rgba(130, 180, 220, 0.9)';
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.ellipse(8, 0, 10, 5, 0, 0, Math.PI * 2);
-    ctx.fill(); ctx.stroke();
-    ctx.restore();
-  }
-
-  ctx.fillStyle = 'rgba(0,0,0,0.15)';
-  ctx.beginPath();
-  ctx.ellipse(x + w/2, y + h + 1, w/2, 2.5, 0, 0, Math.PI*2);
-  ctx.fill();
-
-  if (!t.flying) {
-    ctx.fillStyle = '#f9a825';
-    ctx.beginPath();
-    ctx.ellipse(x + 5 + walk * dir, y + h - 3, 4, 3, 0, 0, Math.PI*2);
-    ctx.fill();
-    ctx.beginPath();
-    ctx.ellipse(x + w - 5 - walk * dir, y + h - 3, 4, 3, 0, 0, Math.PI*2);
-    ctx.fill();
-  } else {
-    ctx.fillStyle = '#f9a825';
-    ctx.beginPath();
-    ctx.ellipse(x + 7, y + h - 2, 3.5, 2.5, 0, 0, Math.PI*2);
-    ctx.fill();
-    ctx.beginPath();
-    ctx.ellipse(x + w - 7, y + h - 2, 3.5, 2.5, 0, 0, Math.PI*2);
-    ctx.fill();
-  }
-
-  const headX = dir > 0 ? x + w - 3 : x + 3;
-  const headY = y + 6;
-  ctx.fillStyle = '#f9d27a';
-  ctx.beginPath();
-  ctx.ellipse(headX, headY + 2, 5, 4, 0, 0, Math.PI*2);
-  ctx.fill();
-  ctx.fillStyle = '#ffeb99';
-  ctx.beginPath();
-  ctx.arc(headX, headY, 7, 0, Math.PI*2);
-  ctx.fill();
-  ctx.fillStyle = '#fff';
-  ctx.beginPath();
-  ctx.arc(headX + dir * 1, headY - 2, 2.6, 0, Math.PI*2);
-  ctx.arc(headX + dir * 4.5, headY - 2, 2.6, 0, Math.PI*2);
-  ctx.fill();
-  ctx.fillStyle = '#222';
-  ctx.beginPath();
-  ctx.arc(headX + dir * 1.8, headY - 2, 1.3, 0, Math.PI*2);
-  ctx.arc(headX + dir * 5.2, headY - 2, 1.3, 0, Math.PI*2);
-  ctx.fill();
-  ctx.strokeStyle = '#8b4513';
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  ctx.arc(headX + dir * 2.5, headY + 3.5, 2, 0.2, Math.PI - 0.2);
-  ctx.stroke();
-
-  const shellColor = t.flying ? '#7e57c2' : '#4caf50';
-  const shellDark = t.flying ? '#4527a0' : '#2e7d32';
-  const shellEdge = t.flying ? '#311b92' : '#1b5e20';
-
-  ctx.fillStyle = shellColor;
-  roundRect(x + 2, y + 4, w - 4, h - 8, 9);
-  ctx.fill();
-  ctx.strokeStyle = shellDark;
-  ctx.lineWidth = 1.5;
-  roundRect(x + 2, y + 4, w - 4, h - 8, 9);
-  ctx.stroke();
-
-  ctx.strokeStyle = shellEdge;
-  ctx.lineWidth = 1.2;
-  ctx.beginPath();
-  ctx.arc(x + w/2, y + h/2, 5, 0, Math.PI*2);
-  ctx.stroke();
-  ctx.beginPath();
-  ctx.moveTo(x + w/2 - 5, y + h/2);
-  ctx.lineTo(x + 4, y + h/2 - 3);
-  ctx.moveTo(x + w/2 + 5, y + h/2);
-  ctx.lineTo(x + w - 4, y + h/2 - 3);
-  ctx.moveTo(x + w/2 - 5, y + h/2);
-  ctx.lineTo(x + 4, y + h/2 + 3);
-  ctx.moveTo(x + w/2 + 5, y + h/2);
-  ctx.lineTo(x + w - 4, y + h/2 + 3);
-  ctx.stroke();
-
-  ctx.fillStyle = 'rgba(255,255,255,0.35)';
-  ctx.beginPath();
-  ctx.ellipse(x + w/2 - 3, y + 8, 5, 2.5, -0.4, 0, Math.PI*2);
-  ctx.fill();
-
-  if (t.flying) {
-    const sparkle = Math.sin(Date.now() / 200);
-    ctx.globalAlpha = 0.5 + sparkle * 0.4;
-    ctx.font = '10px serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('✨', x + w / 2, y - 4);
-    ctx.globalAlpha = 1;
-  }
-}
-
-function drawRobot() {
-  const {x, y, w, h, facing} = player;
-  const isDying = gameState === 'dying';
-
-  ctx.fillStyle = 'rgba(0,0,0,0.15)';
-  ctx.beginPath();
-  ctx.ellipse(x + w/2, y + h + 2, w/2, 3, 0, 0, Math.PI*2);
-  ctx.fill();
-
-  if (isDying) {
-    const blink = Math.floor(deathTimer / 100) % 2 === 0;
-    if (!blink) return;
-    ctx.globalAlpha = 0.85;
-  }
-
-  ctx.fillStyle = '#2a3b49';
-  ctx.fillRect(x + 4, y + h - 5, 6, 5);
-  ctx.fillRect(x + w - 10, y + h - 5, 6, 5);
-
-  const bodyGrad = ctx.createLinearGradient(0, y + 8, 0, y + h);
-  bodyGrad.addColorStop(0, isDying ? '#ff8a80' : '#4fc3f7');
-  bodyGrad.addColorStop(1, isDying ? '#c62828' : '#0288d1');
-  ctx.fillStyle = bodyGrad;
-  roundRect(x + 2, y + 8, w - 4, h - 12, 4);
-  ctx.fill();
-
-  ctx.fillStyle = isDying ? '#ff5252' : '#ffeb3b';
-  ctx.beginPath(); ctx.arc(x + w/2, y + h/2 + 2, 3, 0, Math.PI*2); ctx.fill();
-
-  const headGrad = ctx.createLinearGradient(0, y, 0, y + 12);
-  headGrad.addColorStop(0, isDying ? '#ffab91' : '#b0e0ff');
-  headGrad.addColorStop(1, isDying ? '#ff8a80' : '#4fc3f7');
-  ctx.fillStyle = headGrad;
-  roundRect(x + 3, y, w - 6, 12, 3);
-  ctx.fill();
-
-  const eyeY = y + 5;
-  const e1 = x + w/2 - 5 + facing;
-  const e2 = x + w/2 + 3 + facing;
-  ctx.fillStyle = '#fff';
-  ctx.beginPath();
-  if (isDying) {
-    ctx.arc(e1, eyeY, 3, 0, Math.PI*2);
-    ctx.arc(e2, eyeY, 3, 0, Math.PI*2);
-  } else {
-    ctx.arc(e1, eyeY, 2.5, 0, Math.PI*2);
-    ctx.arc(e2, eyeY, 2.5, 0, Math.PI*2);
-  }
-  ctx.fill();
-  ctx.fillStyle = '#222';
-  ctx.beginPath();
-  ctx.arc(e1 + facing, eyeY, isDying ? 1.5 : 1.3, 0, Math.PI*2);
-  ctx.arc(e2 + facing, eyeY, isDying ? 1.5 : 1.3, 0, Math.PI*2);
-  ctx.fill();
-
-  ctx.strokeStyle = '#555';
-  ctx.lineWidth = 1.5;
-  ctx.beginPath();
-  ctx.moveTo(x + w/2, y);
-  ctx.lineTo(x + w/2, y - 6);
-  ctx.stroke();
-  const glow = Math.sin(Date.now() / 300) * 0.5 + 0.5;
-  ctx.fillStyle = isDying ? '#ff1744' : `rgba(255,80,80,${0.5 + glow * 0.5})`;
-  ctx.beginPath(); ctx.arc(x + w/2, y - 7, 2.5, 0, Math.PI*2); ctx.fill();
-
-  ctx.globalAlpha = 1;
-}
-
-function drawFloatingTexts() {
-  for (const ft of floatingTexts) {
-    const alpha = Math.min(1, ft.timer / 25);
-    ctx.globalAlpha = alpha;
-    ctx.font = 'bold 18px "Segoe UI", sans-serif';
-    ctx.textAlign = 'center';
-    ctx.strokeStyle = 'white';
-    ctx.lineWidth = 4;
-    ctx.strokeText(ft.text + ' ' + ft.icon, ft.x, ft.y);
-    ctx.fillStyle = '#ff9800';
-    ctx.fillText(ft.text + ' ' + ft.icon, ft.x, ft.y);
-    ctx.globalAlpha = 1;
-  }
-}
-
-function loop(ts) {
-  requestAnimationFrame(loop);
-  if (!lastTime) lastTime = ts;
-  let dt = ts - lastTime;
-  if (dt > 100) dt = 100;
-  lastTime = ts;
-  accumulator += dt;
-  while (accumulator >= STEP) {
-    update();
-    accumulator -= STEP;
-  }
-  draw();
-}
-
-function levelComplete() {
-  gameState = 'levelComplete';
-  [523, 659, 784].forEach((f, i) => setTimeout(() => beep(f, 0.12, 'triangle', 0.08), i * 100));
-  showPhotoReward();
-}
-
-function showPhotoReward() {
-  const photo = getPhotoForLevel(levelIndex);
-  const isLast = levelIndex === LEVELS.length - 1;
-  const isFromFolder = folderPhotosValid[levelIndex];
-  const phaseCoins = totalCoins - levelCoinsStart;
-
-  let photoHTML;
-  if (photo) {
-    photoHTML = `
-      <div class="photo-reward"><img src="${photo}" alt="Foto ${levelIndex+1}"></div>
-      <p class="reward-msg">🎁 Surpresa desbloqueada! ${isFromFolder ? '📁' : '📤'}</p>`;
-  } else {
-    photoHTML = `
-      <div class="photo-reward empty">
-        <div style="font-size:2em;">📷</div>
-        <div style="margin-top:4px;">Adicione a foto ${levelIndex+1}<br>na pasta <code>fotos/</code></div>
-      </div>`;
-  }
-
-  const btnText = isLast ? '🏆 Ver Prêmio Final' : '▶️ Próxima Fase';
-
-  showOverlay(`
-    <span class="big-emoji">🎉</span>
-    <h2>Fase ${levelIndex+1} de ${LEVELS.length} completa!</h2>
-    ${photoHTML}
-    <div class="coins-phase">
-      🪙 +${phaseCoins} nesta fase &nbsp;•&nbsp; Total: <b>${totalCoins}</b>
-    </div>
-    <button class="btn" onclick="nextAction()">${btnText}</button>
-  `);
-}
-
-function finalWin() {
-  gameState = 'won';
-  [523, 659, 784, 1047, 1319].forEach((f, i) => setTimeout(() => beep(f, 0.2, 'triangle', 0.09), i * 120));
-  showOverlay(`
-    <span class="big-emoji">🏆</span>
-    <h2>VOCÊ VENCEU TUDO!</h2>
-    <p>Passou as <b>10 fases</b> fugindo das tartarugas<br>e desbloqueou todas as fotos! 💖🐢</p>
-    <div class="total-coins-display">
-      <div style="font-size:0.85em;color:#666;margin-bottom:4px;">Suas moedas acumuladas:</div>
-      <div style="font-size:2.2em;font-weight:900;color:#e65100;line-height:1;">🪙 ${totalCoins}</div>
-    </div>
-    <div class="prize-box">
-      🎁 Prêmio especial:<br>
-      <small>Um abraço bem apertado + o passeio que você escolher! 💕</small>
-    </div>
-    <button class="btn" onclick="nextAction()">🔁 Jogar de novo</button>
-  `);
-  launchConfetti();
-}
-
-function launchConfetti() {
-  const colors = ['#e91e63','#f06292','#ba68c8','#ffd54f','#4dd0e1','#81c784','#ff8a65'];
-  for (let i = 0; i < 50; i++) {
-    const d = document.createElement('div');
-    d.className = 'confetti';
-    d.style.left = Math.random() * 100 + '%';
-    d.style.background = colors[Math.floor(Math.random() * colors.length)];
-    d.style.width = (5 + Math.random() * 7) + 'px';
-    d.style.height = (8 + Math.random() * 10) + 'px';
-    d.style.animationDelay = (Math.random() * 1.5) + 's';
-    d.style.animationDuration = (1.8 + Math.random() * 1.5) + 's';
-    overlayContent.appendChild(d);
-  }
-}
-
-function nextAction() {
-  if (gameState === 'levelComplete') {
-    if (levelIndex < LEVELS.length - 1) loadLevel(levelIndex + 1);
-    else finalWin();
-  } else if (gameState === 'won' || gameState === 'ready') {
-    totalCoins = 0;
-    loadLevel(0);
-  }
-}
-
-function restartLevel() {
-  if (gameState === 'playing' || gameState === 'dying' || gameState === 'levelComplete') {
-    totalCoins = levelCoinsStart;
-    loadLevel(levelIndex);
-  }
-}
-
-function showOverlay(html) {
-  overlayContent.innerHTML = html;
-  overlay.classList.add('show');
-}
-function hideOverlay() {
-  overlay.classList.remove('show');
-  overlayContent.innerHTML = '';
-}
-
-function showStart() {
-  gameState = 'ready';
-  showOverlay(`
-    <span class="big-emoji">🤖💖</span>
-    <h2>Ajude o Robô!</h2>
-    <p>Passe as <b>10 fases</b> e ganhe moedas 🪙<br>pulando nas tartarugas! 🐢</p>
-    <div class="hint-controls">
-      ← → andar &nbsp;•&nbsp; ESPAÇO / ⬆ pular<br>
-      🐢 <b>Pule em cima</b> → mata + ganha moeda<br>
-      🐢 Encostar de lado → morre!<br>
-      🛡️ <b>1,5s de preparo</b> no início de cada fase
-    </div>
-    <button class="btn" onclick="startGame()">▶️ Começar</button>
-  `);
-}
-
-function startGame() {
-  totalCoins = 0;
-  loadLevel(0);
-}
-
-document.addEventListener('keydown', e => {
-  if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') { keys.left = true; e.preventDefault(); }
-  if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') { keys.right = true; e.preventDefault(); }
-  if (e.key === 'ArrowUp' || e.key === ' ' || e.key === 'w' || e.key === 'W') { doJump(); e.preventDefault(); }
-  if (e.key === 'Enter' && gameState !== 'playing' && gameState !== 'dying') {
-    const btn = overlayContent.querySelector('.btn');
-    if (btn) btn.click();
-  }
-});
-
-document.addEventListener('keyup', e => {
-  if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') keys.left = false;
-  if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') keys.right = false;
-});
-
-function doJump() {
-  if (gameState !== 'playing') return;
-  if (player.onGround) {
-    player.vy = JUMP;
-    player.onGround = false;
-    beep(620, 0.09, 'sine', 0.05);
-  }
-}
-
-function bindHold(btnId, key) {
-  const btn = document.getElementById(btnId);
-  const on = e => { e.preventDefault(); keys[key] = true; btn.classList.add('pressed'); };
-  const off = () => { keys[key] = false; btn.classList.remove('pressed'); };
-  btn.addEventListener('pointerdown', on);
-  btn.addEventListener('pointerup', off);
-  btn.addEventListener('pointerleave', off);
-  btn.addEventListener('pointercancel', off);
-}
-bindHold('btnLeft', 'left');
-bindHold('btnRight', 'right');
-document.getElementById('btnJump').addEventListener('pointerdown', e => {
-  e.preventDefault();
-  doJump();
-});
-
-let tStart = null;
-canvas.addEventListener('touchstart', e => {
-  const t = e.changedTouches[0];
-  tStart = { x: t.clientX, y: t.clientY };
-}, { passive: true });
-canvas.addEventListener('touchend', e => {
-  if (!tStart) return;
-  const t = e.changedTouches[0];
-  const dy = t.clientY - tStart.y;
-  if (dy < -25) doJump();
-  tStart = null;
-}, { passive: true });
-
-photoInput.addEventListener('change', e => {
-  const files = Array.from(e.target.files);
-  if (!files.length) return;
-
-  let loaded = 0;
-  const total = files.length;
-
-  files.forEach(file => {
-    const reader = new FileReader();
-    reader.onload = ev => {
-      const img = new Image();
-      img.onload = () => {
-        const c = document.createElement('canvas');
-        const maxW = 700;
-        let w = img.width, h = img.height;
-        if (w > maxW) { h = h * maxW / w; w = maxW; }
-        c.width = w; c.height = h;
-        c.getContext('2d').drawImage(img, 0, 0, w, h);
-        const dataURL = c.toDataURL('image/jpeg', 0.65);
-
-        if (localPhotos.length < 10) localPhotos.push(dataURL);
-
-        loaded++;
-        if (loaded === total) {
-          savePhotos();
-          renderPhotos();
-          showToast(`${localPhotos.length}/10 fotos adicionadas`);
-        }
-      };
-      img.src = ev.target.result;
-    };
-    reader.readAsDataURL(file);
-  });
-  e.target.value = '';
-});
-
-function savePhotos() {
-  try { localStorage.setItem('fotosRobo', JSON.stringify(localPhotos)); }
-  catch(err) { showToast('Espaço cheio! Remova algumas fotos.'); }
-}
-
-function renderPhotos() {
-  let html = '';
-  for (let i = 0; i < 10; i++) {
-    if (folderPhotosValid[i]) {
-      html += `
-        <div class="photo-thumb" style="border-color:#81c784;">
-          <img src="${FOLDER_PHOTOS[i]}" alt="Foto ${i+1}">
-          <div class="photo-label" style="background:rgba(76,175,80,0.9);">📁 F${i+1}</div>
-        </div>`;
-    } else if (localPhotos[i]) {
-      html += `
-        <div class="photo-thumb">
-          <img src="${localPhotos[i]}" alt="Foto ${i+1}">
-          <div class="photo-label">📤 F${i+1}</div>
-          <button class="remove-btn" onclick="deletePhoto(${i})">✕</button>
-        </div>`;
-    } else {
-      html += `<div class="photo-thumb empty">📷<br>F${i+1}</div>`;
-    }
-  }
-  photoGrid.innerHTML = html;
-}
-
-function deletePhoto(i) {
-  if (!confirm('Remover esta foto?')) return;
-  localPhotos.splice(i, 1);
-  savePhotos();
-  renderPhotos();
-}
-
-let toastTimer;
-function showToast(msg) {
-  toast.textContent = msg;
-  toast.classList.add('show');
-  toast.classList.remove('death');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => toast.classList.remove('show'), 2500);
-}
-
-function resetPlaceholder() {
-  player = { x: 30, y: 252, vx: 0, vy: 0, w: PW, h: PH, onGround: false, facing: 1 };
-  platforms = [];
-  coins = [];
-  turtles = [];
-  goal = null;
-  gameState = 'ready';
-}
-
-async function init() {
-  await checkFolderPhotos();
-  renderPhotos();
-  resetPlaceholder();
-  showStart();
-  requestAnimationFrame(loop);
-}
-init();
 </script>
+
 </body>
 </html>
